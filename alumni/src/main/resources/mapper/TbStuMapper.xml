@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mapper.TbStuMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.entity.UserInfo">
+        <id column="user_id" property="userId" />
+        <result column="class_id" property="classId" />
+        <result column="spec_id" property="specId" />
+        <result column="depart_id" property="departId" />
+        <result column="name" property="name" />
+        <result column="username" property="username" />
+        <result column="password" property="password" />
+        <result column="sex" property="sex" />
+        <result column="mobile" property="mobile" />
+        <result column="email" property="email" />
+        <result column="job" property="job" />
+        <result column="address" property="address" />
+        <result column="uimage" property="uimage"/>
+    </resultMap>
+
+    <resultMap id="stuPage" type="com.entity.UserInfo" extends="BaseResultMap">
+        <association property="tbClass" javaType="com.entity.TbClass">
+            <result property="className" column="class_name"/>
+        </association>
+        <association property="tbSpec" javaType="com.entity.TbSpec">
+            <result property="specname" column="specname"/>
+        </association>
+        <association property="tbDepart" javaType="com.entity.TbDepart">
+            <result property="departName" column="depart_name"/>
+        </association>
+    </resultMap>
+
+    <select id="selectStuPage" resultMap="stuPage" >
+        SELECT UserInfo.*,
+        tb_depart.depart_name,
+        tb_spec.specname,
+        tb_class.class_name
+        FROM (tb_spec,
+        tb_class,
+        tb_depart)
+        RIGHT JOIN tb_stu
+        ON tb_stu.class_id = tb_class.class_id
+        AND tb_stu.spec_id = tb_spec.spec_id
+        AND tb_stu.depart_id = tb_depart.depart_id
+        <where>
+            <if test="we.entity.keyword!=null and we.entity.keyword!=''">
+                <if test="we.entity.cid==0">
+                    and (tb_stu.name like '%${we.entity.keyword}%' or tb_class.class_name like
+                    '%${we.entity.keyword}%' or tb_spec.specname like '%${we.entity.keyword}%')
+                </if>
+                <if test="we.entity.cid==1">
+                    and tb_stu.name like '%${we.entity.keyword}%'
+                </if>
+                <if test="we.entity.cid==2">
+                    and tb_class.class_name like '%${we.entity.keyword}%'
+                </if>
+                <if test="we.entity.cid==3">
+                    and tb_spec.specname like '%${we.entity.keyword}%'
+                </if>
+            </if>
+        </where>
+
+    </select>
+
+    <select id="getAssStuById" parameterType="Integer" resultMap="stuPage">
+        SELECT tb_stu.*,tb_class.class_name FROM tb_stu,tb_class WHERE user_id IN (SELECT tb_assstu.user_id FROM tb_assstu WHERE tb_assstu.ass_id=#{assId} )  And tb_stu.class_id = tb_class.class_id
+    </select>
+
+    <select id="getByUserName" parameterType="String" resultMap="BaseResultMap">
+        select tb_stu.user_id,tb_stu.username,tb_stu.password,tb_stu.stu_img from tb_stu where tb_stu.username=#{username}
+    </select>
+
+    <select id="selectActJoinById" parameterType="Integer" resultMap="stuPage">
+SELECT
+	tb_stu.*,
+	tb_class.class_name
+FROM
+	tb_stu,
+	tb_class
+WHERE
+	user_id IN ( SELECT tb_activity_join.user_id FROM tb_activity_join WHERE tb_activity_join.ac_id= #{acId} )
+	AND tb_stu.class_id = tb_class.class_id
+    </select>
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        user_id, class_id, spec_id, depart_id, name, username, password, sex, mobile, birthday, job, address
+    </sql>
+
+</mapper>

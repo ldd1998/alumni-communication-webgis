@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mapper.QuestionMapper">
+    <!-- 文章与用户 -->
+    <resultMap id="questionBean" type="com.entity.Question">
+        <id column="q_id" property="id"></id>
+        <result column="title" property="title"></result>
+        <result column="description" property="description"></result>
+        <result column="create_time" property="createTime"></result>
+        <result column="update_time" property="updateTime"></result>
+        <result column="comment_count" property="commentCount"></result>
+        <result column="view_count" property="viewCount"></result>
+        <result column="like_count" property="likeCount"></result>
+        <result column="tag" property="tag"></result>
+
+        <association property="user" javaType="com.entity.UserInfo">
+            <id column="u_id" jdbcType="INTEGER" property="id" />
+            <result column="name" jdbcType="VARCHAR" property="name" />
+            <result column="account_id" jdbcType="VARCHAR" property="accountId" />
+            <result column="password" jdbcType="VARCHAR" property="password" />
+            <result column="sex" jdbcType="VARCHAR" property="sex" />
+            <result column="uimage" jdbcType="VARCHAR" property="uimage" />
+            <result column="reg_time" jdbcType="VARCHAR" property="regTime" />
+            <result column="email" jdbcType="VARCHAR" property="email" />
+            <result column="mobile" jdbcType="VARCHAR" property="mobile" />
+        </association>
+    </resultMap>
+
+
+    <!-- 查询全部问题列表  搜索 -->
+    <!--resultMap自定义结果集映射规则在上面-->
+    <select id="getAllQuestion" resultMap="questionBean">
+        SELECT q1.id AS q_id,
+        u2.userid AS u_id,
+            title,
+            description,
+            create_time,
+            update_time,
+            comment_count,
+            view_count,
+            like_count,
+            tag,
+            name,
+            username,
+            password,
+            sex,
+            uimage,
+            createtime,
+            email,
+            mobilephone
+        FROM question q1 INNER JOIN `user_info` u2 ON q1.userid = u2.userid
+        <if test="search != '' and search != null">
+            where title REGEXP #{search}
+        </if>
+        order by q_id desc
+        <choose>
+            <when test="page == 9999">
+
+            </when>
+            <otherwise>
+                limit #{page},10
+            </otherwise>
+        </choose>
+
+    </select>
+    <!-- 插入问题 -->
+    <insert id="addQuestion" parameterType="com.entity.Question" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+        INSERT INTO question
+            (`id`,
+            `title`,
+            `description`,
+            `create_time`,
+            `update_time`,
+            `userid`,
+            `comment_count`,
+            `view_count`,
+            `like_count`,
+            `tag`)
+        VALUES
+	    (NULL,#{title},#{description},NOW(),NOW(),#{user.userid},#{commentCount},#{viewCount},#{likeCount},#{tag})
+    </insert>
+    <!-- 根据id获取问题详情 -->
+    <select id="getQuestionById" resultMap="questionBean">
+        SELECT q1.id AS q_id,
+            u2.userid AS u_id,
+            title,
+            description,
+            create_time,
+            update_time,
+            comment_count,
+            view_count,
+            like_count,
+            tag,
+            name,
+            password,
+            sex,
+            uimage,
+            createtime,
+            email,
+            mobilephone
+        FROM question q1 INNER JOIN user_info u2 ON q1.userid = u2.userid
+        where 1 =1
+        <if test="questionId != null and questionId != 0">
+            and q1.id = #{questionId}
+        </if>
+        <if test="userId != null and userId != 0">
+            and u2.id = #{userId}
+            order by q1.id desc
+            limit #{page},10
+        </if>
+
+    </select>
+    <!-- 修改问题 -->
+    <update id="updateQuestion" parameterType="com.entity.Question">
+        update `question` set title = #{title},description=#{description},update_time=NOW(),tag=#{tag} where id = #{id}
+    </update>
+
+    <!-- 增加阅读量 -->
+    <update id="incView" parameterType="Integer">
+        update `question` set view_count = view_count+1 where id = #{id}
+    </update>
+
+    <!-- 增加评论数 -->
+    <update id="updateCommentCount" parameterType="Integer">
+        update `question` set comment_count = comment_count+1 where id = #{id}
+    </update>
+
+    <!-- 查询相关问题 -->
+    <select id="queryRelatedQuestion" parameterType="com.entity.Question" resultType="com.entity.Question">
+        SELECT
+            id,
+            title,
+            view_count as viewCount
+        FROM  `question`  WHERE id != #{id} AND   tag REGEXP #{tag} order by id desc limit 0,10
+    </select>
+
+    <!-- 查询班级相关问题 -->
+    <select id="queryQuestionByClassNum" resultMap="questionBean">
+        SELECT q1.id AS q_id,
+        u2.userid AS u_id,
+        title,
+        description,
+        create_time,
+        update_time,
+        comment_count,
+        view_count,
+        like_count,
+        tag,
+        name,
+        password,
+        sex,
+        uimage,
+        createtime,
+        email,
+        mobilephone
+        FROM question q1 INNER JOIN user_info u2 ON q1.userid = u2.userid
+        where 1 =1
+        <if test="questionId != null and questionId != 0">
+            and q1.classNum = #{classNum} limit 0, 3
+        </if>
+<!--        <if test="userId != null and userId != 0">-->
+<!--            and u2.id = #{userId}-->
+<!--            order by q1.id desc-->
+<!--            limit 0,3-->
+<!--        </if>-->
+    </select>
+</mapper>

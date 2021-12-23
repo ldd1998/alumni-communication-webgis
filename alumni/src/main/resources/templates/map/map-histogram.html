@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:v-bind="http://www.w3.org/1999/xhtml" lang="ch">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="../../favicon.ico">
+
+    <title>城院校友</title>
+
+
+    <link rel="stylesheet" th:href="@{/openlayers/ol.css}">
+    <link rel="stylesheet" th:href="@{/css/map/map.css}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" th:href="@{/css/index/carousel.css}">
+    <script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
+    <link rel="stylesheet" type="text/css" th:href="@{/layui/css/layui.css}"/>
+    <!--    <script th:src="@{/layui/layui.js}"></script>-->
+    <!--    <script type="text/javascript" th:src="@{/js/common/navbar.js}"></script>-->
+    <script type="text/javascript" th:src="@{/openlayers/ol.js}"></script>
+
+    <script type="text/javascript" th:src="@{/js/map/map.js}"></script>
+    <!--    <script type="text/javascript" th:src="@{/js/admin/echarts.js}"></script>-->
+<!--    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts@%5E3.8.0/dist/echarts.min.js"></script>-->
+    <!--    <script type="text/javascript" th:src="@{/js/map/density.js}"></script>-->
+    <script src="https://cdn.jsdelivr.net/npm/echarts@%5E4.8.0/dist/echarts.min.js"></script>
+<!--    <script type="text/javascript" src="https://gallerybox.makeapie.com/dep/echarts/map/js/china.js"></script>-->
+
+
+</head>
+<body>
+<!--上导航栏-->
+<div th:insert="~{index :: navbar}"></div>
+<div style="height: 60px;width: 100%"></div>
+
+<div id="map">
+
+</div>
+<!--侧边栏-->
+<div th:insert="map/map :: map-left"></div>
+
+</body>
+
+<script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
+<script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery.min.js"><\/script>')</script>
+<script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+<!--地图相关-->
+<script th:inline="none">
+    var chartDom = document.getElementById('map');
+    var myChart = echarts.init(chartDom);
+
+
+    //圆圈
+    var points = [
+        {value: [118.8062, 31.9208],itemStyle:{color:'#4ab2e5'}}
+        , {value: [127.9688, 45.368],itemStyle:{color:'#4fb6d2'}}
+        , {value: [110.3467, 41.4899],itemStyle:{color:'#52b9c7'}}
+        , {value: [125.8154, 44.2584],itemStyle:{color:'#5abead'}}
+        , {value: [116.4551, 40.2539],itemStyle:{color:'#f34e2b'}}
+        , {value: [123.1238, 42.1216],itemStyle:{color:'#f56321'}}
+        , {value: [114.4995, 38.1006],itemStyle:{color:'#f56f1c'}}
+        , {value: [117.4219, 39.4189],itemStyle:{color:'#f58414'}}
+        , {value: [112.3352, 37.9413],itemStyle:{color:'#f58f0e'}}
+        , {value: [109.1162, 34.2004],itemStyle:{color:'#f5a305'}}
+        , {value: [103.5901, 36.3043],itemStyle:{color:'#e7ab0b'}}
+        , {value: [106.3586, 38.1775],itemStyle:{color:'#dfae10'}}
+        , {value: [101.4038, 36.8207],itemStyle:{color:'#d5b314'}}
+        , {value: [103.9526, 30.7617],itemStyle:{color:'#c1bb1f'}}
+        , {value: [108.384366, 30.439702],itemStyle:{color:'#b9be23'}}
+        , {value: [113.0823, 28.2568],itemStyle:{color:'#a6c62c'}}
+        , {value: [102.9199, 25.46639],itemStyle:{color:'#96cc34'}}
+        , {value: [115.9199, 28.46639],itemStyle:{color:'#96cc34'}}
+        , {value: [119.9199, 26.46639],itemStyle:{color:'#96cc34'}}
+        , {value: [108.9199, 22.46639],itemStyle:{color:'#96cc34'}}
+        , {value: [112.9199, 22.46639],itemStyle:{color:'#96cc34'}}
+        , {value: [118.9199, 29.46639],itemStyle:{color:'#96cc34'}}
+
+    ]
+    myChart.showLoading();
+    let index = -1;
+    $.getJSON("http://120.55.80.7:8080/geoserver/graduation/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=graduation%3Ashengji_ply&maxFeatures=50&outputFormat=application%2Fjson", function(geoJson) {
+        echarts.registerMap('china', geoJson);
+        myChart.hideLoading();
+        option = {
+            backgroundColor: '#013954',
+            geo: {
+                map: 'china',
+                aspectScale: 0.75, //长宽比
+                zoom: 1.1,
+                roam: false,
+                itemStyle: {
+                    normal: {
+                        areaColor: {
+                            type: 'radial',
+                            x: 0.5,
+                            y: 0.5,
+                            r: 0.8,
+                            colorStops: [{
+                                offset: 0,
+                                color: '#09132c' // 0% 处的颜色
+                            }, {
+                                offset: 1,
+                                color: '#274d68'  // 100% 处的颜色
+                            }],
+                            globalCoord: true // 缺省为 false
+                        },
+                        shadowColor:'rgb(58,115,192)',
+                        shadowOffsetX: 10,
+                        shadowOffsetY: 11
+                    },
+                    emphasis: {
+                        areaColor: '#2AB8FF',
+                        borderWidth: 0,
+                        color: 'green',
+                        label: {
+                            show: false
+                        }
+                    }
+                },
+                regions: [{
+                    name: '南海诸岛',
+                    itemStyle: {
+                        areaColor: 'rgba(0, 10, 52, 1)',
+
+                        borderColor: 'rgba(0, 10, 52, 1)',
+                        normal: {
+                            opacity: 0,
+                            label: {
+                                show: false,
+                                color: "#009cc9",
+                            }
+                        }
+                    },
+
+
+                }],
+            },
+            series: [ {
+                type: 'map',
+                roam: false,
+                label: {
+                    normal: {
+                        show: true,
+                        textStyle: {
+                            color: '#1DE9B6'
+                        }
+                    },
+                    emphasis: {
+                        textStyle: {
+                            color: 'rgb(183,185,14)'
+                        }
+                    }
+                },
+
+                itemStyle: {
+                    normal: {
+                        borderColor: 'rgb(147, 235, 248)',
+                        borderWidth: 1,
+                        areaColor: {
+                            type: 'radial',
+                            x: 0.5,
+                            y: 0.5,
+                            r: 0.8,
+                            colorStops: [{
+                                offset: 0,
+                                color: '#09132c' // 0% 处的颜色
+                            }, {
+                                offset: 1,
+                                color: '#274d68'  // 100% 处的颜色
+                            }],
+                            globalCoord: true // 缺省为 false
+                        },
+                    },
+                    emphasis: {
+                        areaColor: 'rgb(46,229,206)',
+                        //    shadowColor: 'rgb(12,25,50)',
+                        borderWidth: 0.1
+                    }
+                },
+                zoom: 1.1,
+                //     roam: false,
+                map: 'china' //使用
+                //, data: this.difficultData //热力图数据   不同区域 不同的底色
+            },{
+                type: 'effectScatter',
+                coordinateSystem: 'geo',
+                showEffectOn: 'render',
+                zlevel:1,
+                rippleEffect: {
+                    period: 15,
+                    scale: 4,
+                    brushType: 'fill'
+                },
+                hoverAnimation: true,
+                label: {
+                    normal: {
+                        formatter: '{b}',
+                        position: 'right',
+                        offset: [15, 0],
+                        color: '#1DE9B6',
+                        show: true
+                    },
+                },
+                itemStyle: {
+                    normal: {
+                        color:'#1DE9B6',
+                        shadowBlur: 10,
+                        shadowColor: '#333'
+                    }
+                },
+                symbolSize: 12,
+                data: points
+            }, //地图线的动画效果
+                {
+                    type: 'lines',
+                    zlevel: 2,
+                    effect: {
+                        show: true,
+                        period: 4, //箭头指向速度，值越小速度越快
+                        trailLength: 0.4, //特效尾迹长度[0,1]值越大，尾迹越长重
+                        symbol: 'arrow', //箭头图标
+                        symbolSize: 7, //图标大小
+                    },
+                    lineStyle: {
+                        normal: {
+                            color:'#1DE9B6',
+                            width: 1, //线条宽度
+                            opacity: 0.1, //尾迹线条透明度
+                            curveness: .3 //尾迹线条曲直度
+                        }
+                    },
+                    //线条
+                    data: [
+                            //目的地益阳
+                          {coords: [[118.8062, 31.9208],[110.4300, 27.5822]],lineStyle:{color:'#4ab2e5'}}
+                        , {coords: [[127.9688, 45.368],[110.4300, 27.5822]],lineStyle:{color:'#4fb6d2'}}
+                        , {coords: [[110.3467, 41.4899],[110.4300, 27.5822]],lineStyle:{color:'#52b9c7'}}
+                        , {coords: [[125.8154, 44.2584],[110.4300, 27.5822]],lineStyle:{color:'#5abead'}}
+                        , {coords: [[116.4551, 40.2539],[110.4300, 27.5822]],lineStyle:{color:'#f34e2b'}}
+                        , {coords: [[123.1238, 42.1216],[110.4300, 27.5822]],lineStyle:{color:'#f56321'}}
+                        , {coords: [[114.4995, 38.1006],[110.4300, 27.5822]],lineStyle:{color:'#f56f1c'}}
+                        , {coords: [[117.4219, 39.4189],[110.4300, 27.5822]],lineStyle:{color:'#f58414'}}
+                        , {coords: [[112.3352, 37.9413],[110.4300, 27.5822]],lineStyle:{color:'#f58f0e'}}
+                        , {coords: [[109.1162, 34.2004],[110.4300, 27.5822]],lineStyle:{color:'#f5a305'}}
+                        , {coords: [[103.5901, 36.3043],[110.4300, 27.5822]],lineStyle:{color:'#e7ab0b'}}
+                        , {coords: [[106.3586, 38.1775],[110.4300, 27.5822]],lineStyle:{color:'#dfae10'}}
+                        , {coords: [[101.4038, 36.8207],[110.4300, 27.5822]],lineStyle:{color:'#d5b314'}}
+                        , {coords: [[103.9526, 30.7617],[110.4300, 27.5822]],lineStyle:{color:'#c1bb1f'}}
+                        , {coords: [[108.384366, 30.439702],[110.4300, 27.5822]],lineStyle:{color:'#b9be23'}}
+                        , {coords: [[113.0823, 28.2568],[110.4300, 27.5822]],lineStyle:{color:'#a6c62c'}}
+                        , {coords: [[102.9199, 25.46639],[110.4300, 27.5822]],lineStyle:{color:'#96cc34'}}
+                        , {coords: [[115.9199, 28.46639],[110.4300, 27.5822]],lineStyle:{color:'#96cc34'}}
+                        , {coords: [[119.9199, 26.46639],[110.4300, 27.5822]],lineStyle:{color:'#96cc34'}}
+                        , {coords: [[108.9199, 22.46639],[110.4300, 27.5822]],lineStyle:{color:'#96cc34'}}
+                        , {coords: [[112.9199, 22.46639],[110.4300, 27.5822]],lineStyle:{color:'#96cc34'}}
+                        , {coords: [[118.9199, 29.46639],[110.4300, 27.5822]],lineStyle:{color:'#96cc34'}}
+
+                    ]
+                }
+
+            ]
+        };
+        myChart.setOption(option,true);
+
+    });
+
+</script>
+<!--聊天系统-->
+<script th:inline="javascript">
+    var basePath = [[${#httpServletRequest.getScheme() + "://" + #httpServletRequest.getServerName() + ":" + #httpServletRequest.getServerPort() + #httpServletRequest.getContextPath()}]];
+    var userid = [[${session.userid}]];
+</script>
+<script type="application/javascript" th:src="@{/layim/layui/layui.js}"></script>
+<script type="application/javascript" th:src="@{/js/admin/layuiim.js}"></script>

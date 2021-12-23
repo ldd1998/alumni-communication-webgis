@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mapper.TbDonMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.entity.TbDon">
+        <id column="don_id" property="donId" />
+        <result column="don_name" property="donName" />
+        <result column="don_desc" property="donDesc" />
+        <result column="userid" property="userid" />
+        <result column="don_time" property="donTime" />
+        <result column="don_status" property="donStatus" />
+        <result column="don_opinion" property="donOpinion" />
+
+    </resultMap>
+
+    <resultMap id="PageDon" type="com.entity.TbDon" extends="BaseResultMap">
+        <association property="userInfo" javaType="com.entity.UserInfo">
+            <result property="userid" column="userid"/>
+            <result property="name" column="name"/>
+        </association>
+    </resultMap>
+
+    <select id="getAllDon" resultMap="PageDon">
+        SELECT tb_don.*,user_info.userid,user_info.`username` FROM tb_don,user_info WHERE tb_don.userid=user_info.userid AND tb_don.don_status=1
+    </select>
+
+    <select id="getDonById" parameterType="Integer" resultMap="PageDon">
+        SELECT tb_don.*,user_info.userid,user_info.name FROM tb_don,user_info WHERE tb_don.userid=user_info.userid AND tb_don.don_id=#{donId}
+    </select>
+
+    <insert id="save" parameterType="com.entity.TbDon">
+        INSERT INTO tb_don (don_id, don_name, don_desc, don_status, don_opinion, don_time, userid) VALUES(#{donId},#{donName},#{donDesc},#{donStatus},#{donOpinion},#{donTime},#{userid})
+    </insert>
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        don_id, don_name, don_desc, don_per, don_time
+    </sql>
+
+    <select id="queryDonateListByLimit" resultType="com.entity.TbDon">
+        select * from tb_don limit #{page},#{limit};
+    </select>
+
+
+</mapper>

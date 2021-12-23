@@ -1,0 +1,18 @@
+#map{
+    width: 87%;
+    height: 650px;
+    /*background-color: #00A0D1;*/
+    float: right;
+}
+#left-navbar{
+    width: 13%;
+    height: 650px;
+    background-color: #393D49;
+
+}
+#map_container{
+     width: 87%;
+     height: 650px;
+     /*background-color: #00A0D1;*/
+     float: right;
+ }

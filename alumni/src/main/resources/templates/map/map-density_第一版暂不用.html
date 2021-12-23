@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:v-bind="http://www.w3.org/1999/xhtml" lang="ch">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="../../favicon.ico">
+
+    <title>城院校友</title>
+
+
+    <link rel="stylesheet" th:href="@{/openlayers/ol.css}">
+    <link rel="stylesheet" th:href="@{/css/map/map.css}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" th:href="@{/css/index/carousel.css}">
+    <script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
+    <link rel="stylesheet" type="text/css" th:href="@{/layui/css/layui.css}"/>
+<!--    <script th:src="@{/layui/layui.js}"></script>-->
+<!--    <script type="text/javascript" th:src="@{/js/common/navbar.js}"></script>-->
+    <script type="text/javascript" th:src="@{/openlayers/ol.js}"></script>
+
+    <script type="text/javascript" th:src="@{/js/map/map.js}"></script>
+    <script type="text/javascript" th:src="@{/js/admin/echarts.js}"></script>
+<!--    <script type="text/javascript" th:src="@{/js/map/density.js}"></script>-->
+
+</head>
+<body>
+<!--上导航栏-->
+<div th:insert="~{index :: navbar}"></div>
+<div style="height: 60px;width: 100%"></div>
+
+<div id="map">
+
+</div>
+<!--侧边栏-->
+<div th:insert="map/map :: map-left"></div>
+
+</body>
+
+<script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
+<script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery.min.js"><\/script>')</script>
+<script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+<script>
+    <!--------------------------------------------导航和侧边栏栏----------------------------------------------->
+    layui.use('element', function(){
+        var element = layui.element; //导航的hover效果、二级菜单等功能，需要依赖element模块
+
+        //监听导航点击
+        element.on('nav(demo)', function(elem){
+            //console.log(elem)
+            layer.msg(elem.text()+"1");
+        });
+    });
+</script>
+
+<script>
+
+    var ROOT_PATH = 'https://cdn.jsdelivr.net/gh/apache/echarts-website@asf-site/examples';
+
+    var chartDom = document.getElementById('map');
+    var myChart = echarts.init(chartDom);
+    var option;
+
+    myChart.showLoading();
+
+    $.get("http://120.55.80.7:8080/geoserver/graduation/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=graduation%3Ashengji_ply&maxFeatures=50&outputFormat=application%2Fjson", function (geoJson) {
+
+        myChart.hideLoading();
+
+        echarts.registerMap('HK', geoJson);
+
+        myChart.setOption(option = {
+            title: {
+                text: '湖南城市学院校友分布密度图',
+                subtext: '数据来源：国家基础地理信息数据中心',
+                sublink: 'javaScript:;'
+            },
+            tooltip: {
+                trigger: 'item',
+                formatter: '{b}<br/>{c} (人)'
+            },
+            toolbox: {
+                show: true,
+                orient: 'vertical',
+                left: 'right',
+                top: 'center',
+                feature: {
+                    dataView: {readOnly: false},
+                    restore: {},
+                    saveAsImage: {}
+                }
+            },
+            visualMap: {
+                min: 0,
+                max: 500,
+                text: ['High', 'Low'],
+                realtime: false,
+                calculable: true,
+                inRange: {
+                    color: ['lightskyblue', 'yellow', 'orangered']
+                }
+            },
+            series: [
+                {
+                    name: '城院校友密度图',
+                    type: 'map',
+                    mapType: 'HK', // 自定义扩展图表类型
+                    label: {
+                        show: true
+                    },
+                    data: [
+                        {name: geoJson.features[0].properties.name, value: geoJson.features[0].properties.studentnum},
+                        {name: geoJson.features[1].properties.name, value: geoJson.features[1].properties.studentnum},
+                        {name: geoJson.features[2].properties.name, value: geoJson.features[2].properties.studentnum},
+                        {name: geoJson.features[3].properties.name, value: geoJson.features[3].properties.studentnum},
+                        {name: geoJson.features[4].properties.name, value: geoJson.features[4].properties.studentnum},
+                        {name: geoJson.features[5].properties.name, value: geoJson.features[5].properties.studentnum},
+                        {name: geoJson.features[6].properties.name, value: geoJson.features[6].properties.studentnum},
+                        {name: geoJson.features[7].properties.name, value: geoJson.features[7].properties.studentnum},
+                        {name: geoJson.features[8].properties.name, value: geoJson.features[8].properties.studentnum},
+                        {name: geoJson.features[9].properties.name, value: geoJson.features[9].properties.studentnum},
+                        {name: geoJson.features[10].properties.name, value: geoJson.features[10].properties.studentnum},
+                        {name: geoJson.features[11].properties.name, value: geoJson.features[11].properties.studentnum},
+                        {name: geoJson.features[12].properties.name, value: geoJson.features[12].properties.studentnum},
+                        {name: geoJson.features[13].properties.name, value: geoJson.features[13].properties.studentnum},
+                        {name: geoJson.features[14].properties.name, value: geoJson.features[14].properties.studentnum},
+                        {name: geoJson.features[15].properties.name, value: geoJson.features[15].properties.studentnum},
+                        {name: geoJson.features[16].properties.name, value: geoJson.features[16].properties.studentnum},
+                        {name: geoJson.features[17].properties.name, value: geoJson.features[17].properties.studentnum},
+                        {name: geoJson.features[18].properties.name, value: geoJson.features[18].properties.studentnum},
+                        {name: geoJson.features[19].properties.name, value: geoJson.features[19].properties.studentnum},
+                        {name: geoJson.features[20].properties.name, value: geoJson.features[20].properties.studentnum},
+                        {name: geoJson.features[21].properties.name, value: geoJson.features[21].properties.studentnum},
+                        {name: geoJson.features[22].properties.name, value: geoJson.features[22].properties.studentnum},
+                        {name: geoJson.features[23].properties.name, value: geoJson.features[23].properties.studentnum},
+                        {name: geoJson.features[24].properties.name, value: geoJson.features[24].properties.studentnum},
+                        {name: geoJson.features[25].properties.name, value: geoJson.features[25].properties.studentnum},
+                        {name: geoJson.features[26].properties.name, value: geoJson.features[26].properties.studentnum},
+                        {name: geoJson.features[27].properties.name, value: geoJson.features[27].properties.studentnum},
+                        {name: geoJson.features[28].properties.name, value: geoJson.features[28].properties.studentnum},
+                        {name: geoJson.features[29].properties.name, value: geoJson.features[29].properties.studentnum},
+                        {name: geoJson.features[30].properties.name, value: geoJson.features[30].properties.studentnum},
+                        {name: geoJson.features[31].properties.name, value: geoJson.features[31].properties.studentnum},
+                        {name: geoJson.features[32].properties.name, value: geoJson.features[32].properties.studentnum},
+                        {name: geoJson.features[33].properties.name, value: geoJson.features[33].properties.studentnum},
+                    ],
+                    // 自定义名称映射
+                }
+            ]
+        });
+    });
+
+    option && myChart.setOption(option);
+
+</script>
+
+<!--聊天系统-->
+<script th:inline="javascript">
+    var basePath = [[${#httpServletRequest.getScheme() + "://" + #httpServletRequest.getServerName() + ":" + #httpServletRequest.getServerPort() + #httpServletRequest.getContextPath()}]];
+    var userid = [[${session.userid}]];
+</script>
+<script type="application/javascript" th:src="@{/layim/layui/layui.js}"></script>
+<script type="application/javascript" th:src="@{/js/admin/layuiim.js}"></script>

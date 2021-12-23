@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:v-bind="http://www.w3.org/1999/xhtml" lang="ch">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="../../favicon.ico">
+
+    <title>城院校友</title>
+
+    <link rel="stylesheet" th:href="@{/css/news/news.css}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" th:href="@{/css/index/carousel.css}">
+    <script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
+    <link rel="stylesheet" type="text/css" th:href="@{/layui/css/layui.css}"/>
+    <script th:src="@{/layui/layui.js}"></script>
+    <script type="text/javascript" th:src="@{/js/common/navbar.js}"></script>
+
+
+    <style>
+
+
+    </style>
+</head>
+
+<body>
+<!--上导航栏-->
+<div th:insert="~{index :: navbar}"></div>
+<!--<div style="height: 60px;width: 100%"></div>-->
+
+<!--主体部分-->
+<div class="container" style="margin-top: 80px">
+    <!-- Main component for a primary marketing message or call to action -->
+    <div class="">
+        <img th:src="@{/images/news/news-index.png}" width="1045"/>
+    </div>
+    <br>
+    <div class="row row-offcanvas row-offcanvas-right">
+
+        <div class="col-md-11 col-xs-8">
+            <!-- 校友新闻 -->
+            <div class="panel panel-default panel-alt widget-messaging">
+                <div class="panel-heading">
+                    <h1 class="panel-title" style="line-height: 30px">校友新闻<a href="#" class="glyphicon glyphicon-menu-right" style="float: right;line-height: 30px"></a></h1>
+                </div>
+
+                <table class="table table-striped">
+                    <tbody class="news-title">
+                    <tr th:each="news:${newsList}" >
+                        <td><a th:href="@{/news/newsDetail(newId=${news.getNewsId()})}" th:text="${news.getNewsTitle()}" style="line-height: 40px;">12021年元旦贺词：铿锵的步伐跑出最美城院</a><small class="pull-right" th:text="${news.getNewsTime()}">2022</small></td>
+                    </tr>
+                    </tbody>
+                </table>
+
+            </div><!-- panel -->
+
+            <!--layui 分页-->
+            <div id="demo3" class="text-center"></div>
+        </div>
+
+        <!--热点新闻-->
+<!--        <div class="col-md-3 col-xs-3" th:fragment="news-hot">-->
+<!--            <div class="panel panel-default panel-alt widget-messaging">-->
+<!--                <div class="panel-heading">-->
+<!--                    <h1 class="panel-title" style="line-height: 30px">热门新闻<a href="#" class="glyphicon glyphicon-menu-right" style="float: right;line-height: 30px"></a></h1>-->
+<!--                </div>-->
+<!--                <ul class="folder-list" style="padding-top: 20px; padding-right: 20px">-->
+<!--                    <li th:each="news:${newsListHot}">-->
+<!--                        <div class="media" style="">-->
+<!--                            <a class="pull-left col-sm-4" style="max-height: 40px;" th:href="@{/news/newsDetail(newId=${news.getNewsId()})}">-->
+<!--                                <img class="img-responsive" th:src="${news.getNewsImage()}">-->
+<!--                            </a>-->
+<!--                            <div class="media-body" style="max-height: 40px;width: 280px">-->
+<!--                                <a  class="email-summary" th:href="@{/news/newsDetail(newId=${news.getNewsId()})}" th:text="${news.getNewsTitle().substring(0,11)}"></a>-->
+<!--                                <br>-->
+<!--                                <small class="text-muted" th:text="${news.getNewsTime()}">-->
+<!--                                    发布于 ： 2020-2-2-->
+<!--                                </small>-->
+<!--                                <br>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                        <hr >-->
+<!--                    </li>-->
+<!--                </ul>-->
+<!--            </div>-->
+<!--        </div>-->
+    </div><!--/row-->
+<!--    <div style="height: 50px"></div><hr>-->
+<!--    <div style="height: 50px"></div>-->
+</div> <!-- /container -->
+
+
+<!-- 底部 -->
+<include src="../common/footer.html"></include>
+
+</div><!-- /.container -->
+<script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
+<script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery.min.js"><\/script>')</script>
+<script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</body>
+
+</html>
+
+<!--聊天系统-->
+<script th:inline="javascript">
+    var basePath = [[${#httpServletRequest.getScheme() + "://" + #httpServletRequest.getServerName() + ":" + #httpServletRequest.getServerPort() + #httpServletRequest.getContextPath()}]];
+    var userid = [[${session.userid}]];
+</script>
+<script type="application/javascript" th:src="@{/layim/layui/layui.js}"></script>
+<script type="application/javascript" th:src="@{/js/admin/layuiim.js}"></script>
+
+<!--layui分页-->
+<script type="text/javascript" th:inline="javascript">
+    layui.use(['laypage', 'layer'], function () {
+        var page = [[${page}]]
+        var laypage = layui.laypage, layer = layui.layer;
+        //自定义首页、尾页、上一页、下一页文本
+        laypage.render({
+            elem: 'demo3'
+            , count: 100//数据总数，从服务端得到
+            , first: '首页'
+            , last: '尾页'
+            , curr: page //获取起始页
+            , prev: '<em>上一页</em>'
+            , next: '<em>下一页</em>'
+            ,jump: function(obj, first){
+                //obj包含了当前分页的所有参数，比如：
+                console.log(obj.curr); //得到当前页，以便向服务端请求对应页的数据。
+                console.log(obj.limit); //得到每页显示的条数
+                //window.location.href="/admin/studentList"
+
+                //首次不执行
+                if(!first){
+                    //do something
+                    console.log("首次不执行");
+                    window.location.href="/news?page="+obj.curr+"&limit="+obj.limit;
+                }
+            }
+        });
+    });
+</script>

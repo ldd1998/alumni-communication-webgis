@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:v-bind="http://www.w3.org/1999/xhtml" lang="ch">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="../../favicon.ico">
+
+    <title>城院校友</title>
+
+    <link rel="stylesheet" th:href="@{/css/bbs/bbs.css}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" th:href="@{/css/index/carousel.css}">
+    <script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
+    <link rel="stylesheet" type="text/css" th:href="@{/layui/css/layui.css}"/>
+    <script th:src="@{/layui/layui.js}"></script>
+    <script type="text/javascript" th:src="@{/js/common/navbar.js}"></script>
+
+</head>
+
+<body>
+<!--上导航栏-->
+<div th:insert="~{index :: navbar}"></div>
+<div style="height: 60px;width: 100%"></div>
+
+<div class="row container center-block">
+    <div class="col-lg-8 col-md-12 col-sm-12 col-xs-12" style="background-color: white;">
+        <!-- 页头 -->
+        <div class="page-header">
+            <h2 style="float: left">
+                <span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
+                发现
+            </h2>
+            <h2 style="margin-left: 640px">
+                <a th:href="@{/BBS/publish}">
+                    <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>发布
+                </a>
+            </h2>
+        </div>
+        <!-- 论坛列表 -->
+        <div class="item" th:each="question : ${QUESTION_LIST}">
+            <a title="ccdalao - 个人主页" href="#" target="_blank">
+                <img class="img-circle" uid="2329" pos="right" th:src="${question.user.uimage}" style="cursor: pointer;">
+            </a>
+            <div class="middle text">
+                <h4 class="title">
+<!--                    <a class="forum-name" href="#" th:text="'['+${question.tag}+']'"></a>-->
+                    <a style="" class="thread-title" th:href="'/question/'+${question.id}" th:text="${question.title}"></a>
+                    <a href="#" ><span th:text="${question.tag}" class="label label-info"></span></a>
+
+                </h4>
+                <div class="meta" th:text="${question.user.name}+'&nbsp;&nbsp;·&nbsp;&nbsp;发表于 '+${T(com.util.DateUtil).getCreateDate(question.createTime)}+'&nbsp;&nbsp;·&nbsp;&nbsp;'+${question.viewCount}+'次浏览'">
+                </div>
+                <div class="comment">
+                    <span class="badge badge-success" th:text="${question.commentCount}"></span>
+                </div>
+            </div>
+        </div>
+        <!-- 分页 -->
+        <nav aria-label="Page navigation">
+            <ul class="pagination">
+                <li>
+                    <a th:href="${SEARCH != null && SEARCH != '' ? '/BBS/?page=0&search='+SEARCH : '/BBS/?page=0'}" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+                <li><a th:href="${SEARCH != null && SEARCH != '' ? '/BBS/?page='+(pStat.index +1)+'&search='+SEARCH : '/BBS/?page='+(pStat.index +1)}" th:each="page,pStat : ${PAGE_LIST}" th:text="${pStat.index} +1"></a></li>
+                <li>
+                    <a th:href="${SEARCH != null && SEARCH != '' ? '/BBS/?page='+PAGE_LIST.size()+'&search='+SEARCH : '/BBS/?page='+PAGE_LIST.size()} " aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+    </div>
+
+
+    <div class="col-md-3 visible-lg-block col-md-offset-1" style="background-color: white;margin-left: 10px;">
+        <!-- 页头 -->
+        <div class="page-header">
+            <h5>
+                <span class="glyphicon glyphicon-signal" aria-hidden="true"></span>
+                热门话题
+            </h5>
+        </div>
+        <!-- 热门话题列表 -->
+        <div>
+            <a href="#">
+                <img class="img-rounded" src="https://elasticsearch.cn/static/common/topic-mid-img.png" style="width: 40px; height: 40px;margin-right: 10px;" />
+            </a>
+            <h5>
+                <a href="#"><span class="label label-info">java话题</span></a>
+
+            </h5>
+            <p class="text-muted">100个关注</p>
+        </div>
+
+    </div>
+</div>
+</body>
+</html>
+
+<!--聊天系统-->
+<script th:inline="javascript">
+    var basePath = [[${#httpServletRequest.getScheme() + "://" + #httpServletRequest.getServerName() + ":" + #httpServletRequest.getServerPort() + #httpServletRequest.getContextPath()}]];
+    var userid = [[${session.userid}]];
+</script>
+<script type="application/javascript" th:src="@{/layim/layui/layui.js}"></script>
+<script type="application/javascript" th:src="@{/js/admin/layuiim.js}"></script>
+<script th:inline="javascript">
+    var s = [[${session.userid}]]
+    if(s==null){
+        alert("请先登陆！")
+        window.location.href="/login"
+    }
+</script>

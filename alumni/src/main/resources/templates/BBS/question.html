@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org" layout:decorator="secure_template"
+      xmlns:layout="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>校友系统</title>
+
+    <!-- 最新版本的 Bootstrap 核心 CSS 文件 -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="../../favicon.ico">
+
+<!--    <link rel="stylesheet" th:href="@{/css/bbs/publish.css}">-->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" th:href="@{/css/index/carousel.css}">
+    <script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
+    <link rel="stylesheet" type="text/css" th:href="@{/layui/css/layui.css}"/>
+    <script th:src="@{/layui/layui.js}"></script>
+    <script type="text/javascript" th:src="@{/js/common/navbar.js}"></script>
+
+
+</head>
+<body style="background-color: #f1f4f9;">
+<!--<span id="questionIdSpan" style="display: none;" th:data-id="${QUESTION.id}"></span>-->
+<!-- 头部 -->
+<div th:insert="index :: navbar"></div>
+<div style="width: 100%;height: 100px"></div>
+<div class="row container center-block">
+    <div class="col-lg-8 col-md-12 col-sm-12 col-xs-12" style="background-color: white;padding: 0 20px 20px;">
+        <div class="page-header" style="margin-top: 20px;">
+            <h3 th:text="${QUESTION.title}"></h3>
+            <p class="text-muted">
+                作者:<a href="#" th:text="${QUESTION.user.name}"></a>
+                |<span th:text="${T(com.util.DateUtil).getCreateDate(QUESTION.createTime)}"></span>|
+                <span th:text="'阅读数:'+${QUESTION.viewCount}"></span>
+            </p>
+            <hr/>
+            <h5>
+                    <span class="label label-info glyphicon glyphicon-tag" th:each="tag : ${QUESTION.tag.split(',')}" style="margin-right: 10px;">
+                        <span th:text="${tag}"></span>
+                    </span>
+            </h5>
+        </div>
+        <!-- 文章内容 -->
+        <p class="lead" th:utext="${QUESTION.description}"></p>
+        <hr />
+        <span class="text-muted" th:text="${T(com.util.DateUtil).getCreateDate(QUESTION.createTime)}+'&nbsp|&nbsp'">
+            </span>
+        <a href="#editor2" class="text-primary"><span class="glyphicon glyphicon-comment" aria-hidden="true"></span>添加评论</a>
+        <a th:href="'/publish/'+${QUESTION.id}" class="text-primary" th:if="${session.username != null && session.userid == QUESTION.user.id}">&nbsp|&nbsp编辑文章</a>
+        <!-- 评论 -->
+        <div class="page-header">
+            <h3 th:text="${QUESTION.commentCount}+'个回复'"></h3>
+        </div>
+
+        <!-- 评论列表 -->
+        <div th:each="comment :${COMMENTS}">
+            <div th:id="'comment_location'+${comment.id}" class="panel panel-info">
+                <div class="panel-heading">
+                    <h3 class="panel-title">
+                        <img class="img-circle" th:src="${comment.user.uimage}" alt="头像" style="width: 40px; height: 40px;">
+                        <span class="text-muted" th:text="${comment.user.name}"></span>
+                        <span class="pull-right text-muted" th:text="${T(com.util.DateUtil).getCreateDate(comment.updateTime)}"></span>
+                    </h3>
+                </div>
+                <div class="panel-body">
+                        <span th:id="${'comment_button'+comment.id}" type="button" class="btn btn-default pull-right" th:data-target="'#collapseExample'+${comment.id}" th:data-id="${comment.id}" onclick="collapse(this)">
+                            <span class="glyphicon glyphicon-comment" aria-hidden="true"></span>
+                            <span th:text="'&nbsp;'+${comment.replyCount}"></span>
+                        </span>
+
+                    <span class="pull-left" th:utext="${comment.content}"></span>
+                    <span th:id="'like_button'+${comment.id}" type="button" class="btn btn-default pull-right" aria-label="Left Align" onclick="like(this)" th:data-id="${comment.id}">
+                            <span th:id="'com_like'+${comment.id}" class="glyphicon glyphicon-thumbs-up" aria-hidden="true" th:text="'&nbsp;'+${comment.likeCount}"></span>
+                        </span>
+                    <!-- 二级评论 -->
+                    <div class="collapse" th:id="'collapseExample'+${comment.id}" style="margin-top: 5px;">
+                        <div class="well" style="padding: 7px;float: right;width: 90%;margin-top: 10px;">
+                            <!--<h6>
+                                <img class="img-circle" src="https://elasticsearch.cn/uploads/avatar/000/01/10/17_avatar_max.jpg" alt="头像" style="width: 30px; height: 30px;">
+
+                                <a href="#" style="margin-left: 10px;">二级评论名称</a>•
+                                <span class="text-muted">2020-1-1</span>
+                                <a href="#" class="pull-right">回复</a>
+                                <p style="margin-top: 10px;margin-left:42px;">评论内容</p>
+
+                            </h6>-->
+                            <!-- 二级评论 ajax放置处 -->
+                            <div th:id="${'secondComment'+comment.id}">
+
+                            </div>
+                            <div style="margin-top: 20px;" th:if="${session.username != null}">
+                                <!--<input id="hideCommentId" type="hidden" th:value="${comment.id}" />-->
+                                <input th:id="${'replycontent'+comment.id}" type="text" class="form-control" placeholder="输入您想说的话！">
+                                <button id="reply_button" type="button" class="btn btn-success pull-right" style="margin-top: 10px;" th:onclick="'replyComment('+${comment.id}+')'">提交</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr />
+        </div>
+        <div id="comment_edit" th:if="${session.username != null}">
+            <div class="page-header">
+                <img class="img-circle" th:src="${session.USER.uimage}" width="40" height="40"/>&nbsp;<span class="text-muted" th:text="${session.username}"></span>
+            </div>
+            <div id="editor" style="border: 1px solid #ccc;"></div>
+            <div id="editor2" class="text" style="height: 200px;border: 1px solid #ccc;"></div>
+            <textarea id="content" name="description" style="width:100%; height:200px;display: none;"></textarea>
+            <!-- 警告框 -->
+            <div id="message" class="alert alert-danger alert-dismissible" role="alert" style="display: none;">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <strong>内容不可为空！！！</strong>
+            </div>
+            <div style="margin-top: 20px;">
+                <a href="javascript:;" class="file">选择文件
+                    <input id="fileUpload" type="file" >
+                </a>
+                <span class="text-muted">允许 : jpg,jpeg,png,gif</span>
+                <div id="img_url"></div>
+                <button id="comment_button" type="button" class="btn btn-success pull-right" >提交</button>
+            </div>
+
+        </div>
+        <div th:if="${session.username == null}">
+            <div class="center-block" style="width: 182px;">
+                <span>要回复问题请先<a href="/login">登录</a>或者<a href="/reg">注册</a></span>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="col-md-3 visible-lg-block col-md-offset-1" style="margin-left: 2px;">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" style="background-color: white;margin-bottom: 20px;">
+            <!-- 发起人 -->
+            <div class="page-header">
+                <h4>发起人</h4>
+                <div class="center-block" style="width: 30%;">
+                    <a href="#" class="thumbnail">
+                        <img th:src="${QUESTION.user.uimage}" alt="头像" style="width: 50px; height: 50px;">
+                    </a>
+                </div>
+
+                <center>
+                    <a href="#"><span class="text-muted" th:text="${QUESTION.user.name}">发起人名称</span></a>
+                </center>
+            </div>
+        </div>
+<!--        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" style="background-color: white;margin-bottom: 20px;">-->
+<!--            <h4>广告位</h4>-->
+<!--        </div>-->
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" style="background-color: white;">
+            <h4>相关问题</h4>
+            <ul style="list-style: none;padding-left: 0px;line-height: 25px;">
+                <li th:each="question : ${RELATEDQUESTIONS}">
+                    <a th:href="'/question/'+${question.id}" th:text="${question.title}"></a>
+                    <span class="glyphicon glyphicon-fire" th:text="${question.viewCount}" style="color: #FF2D2D;font-size: 11px;"></span>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+<script src="/js/BBS/question.js"></script>
+<script th:src="@{/js/BBS/wangEditor.min.js}" ></script>
+<script th:inline="JavaScript">
+    var E = window.wangEditor
+    var editor = new E('#editor','#editor2')
+    var $text1 = $('#content')
+    editor.customConfig.onchange = function (html) {
+        // 监控变化，同步更新到 textarea
+        $text1.val(html)
+
+    }
+    // 自定义菜单配置
+    editor.customConfig.menus = [
+        'head',
+        'bold',
+        'fontSize',
+        'fontName',
+        'italic',
+        'underline',
+        'strikeThrough',
+        'foreColor',
+        'backColor',
+        'list',
+        'justify',
+        'emoticon',
+        'image',
+        'code',
+    ]
+    //表情配置
+    editor.customConfig.emotions = [
+        {
+            // tab 的标题
+            title: '表情',
+            // type -> 'emoji' / 'image'
+            type: 'image',
+            // content -> 数组
+            content: [
+                {
+                    alt: '[微笑]',
+                    src: '/layim/layui/images/face/0.gif'
+                },
+                {
+                    alt: '[贱笑]',
+                    src: '/layim/layui/images/face/1.gif'
+                },
+                {
+                    alt: '[大笑]',
+                    src: '/layim/layui/images/face/2.gif'
+                },
+                {
+                    alt: '[害羞]',
+                    src: '/layim/layui/images/face/3.gif'
+                },
+                {
+                    alt: '[可怜]',
+                    src: '/layim/layui/images/face/4.gif'
+                },
+                {
+                    alt: '[抠鼻]',
+                    src: '/layim/layui/images/face/5.gif'
+                },
+                {
+                    alt: '[惊讶]',
+                    src: '/layim/layui/images/face/6.gif'
+                },
+                {
+                    alt: '[腼腆]',
+                    src: '/layim/layui/images/face/7.gif'
+                },
+                {
+                    alt: '[调皮]',
+                    src: '/layim/layui/images/face/8.gif'
+                },
+                {
+                    alt: '[闭嘴]',
+                    src: '/layim/layui/images/face/9.gif'
+                },
+                {
+                    alt: '[鄙视]',
+                    src: '/layim/layui/images/face/10.gif'
+                },
+                {
+                    alt: '[萌萌哒]',
+                    src: '/layim/layui/images/face/11.gif'
+                },
+                {
+                    alt: '[大哭]',
+                    src: '/layim/layui/images/face/12.gif'
+                },
+                {
+                    alt: '[偷笑]',
+                    src: '/layim/layui/images/face/13.gif'
+                },
+                {
+                    alt: '[亲亲]',
+                    src: '/layim/layui/images/face/14.gif'
+                },
+                {
+                    alt: '[恶心]',
+                    src: '/layim/layui/images/face/15.gif'
+                },
+                {
+                    alt: '[么么哒]',
+                    src: '/layim/layui/images/face/16.gif'
+                },
+                {
+                    alt: '[什么鬼]',
+                    src: '/layim/layui/images/face/17.gif'
+                },
+                {
+                    alt: '[右呵呵]',
+                    src: '/layim/layui/images/face/18.gif'
+                },
+                {
+                    alt: '[左呵呵]',
+                    src: '/layim/layui/images/face/19.gif'
+                },
+                {
+                    alt: '[别吵吵]',
+                    src: '/layim/layui/images/face/20.gif'
+                }
+            ]
+        }
+    ]
+    // 或者 var editor = new E( document.getElementById('editor') )
+    editor.create()
+    // 初始化 textarea 的值
+    $text1.val(editor.txt.html())
+    //ajax提交评论
+    $("#comment_button").click(function (event) {
+
+        if ($text1.val() != '<p><br></p>'){
+            $.ajax({
+                url: '/createComment',
+                type: 'post',
+                dataType: 'text',
+                data: {
+                    content:$text1.val(),
+                    questionId:[[${QUESTION.id}]],
+                    parentId:0,
+                    type:0
+                },
+                success:function (data) {
+                    var count = parseInt(data);
+                    if (count > 0){
+                        window.location.reload();
+                        $('#comment_edit').hide();
+
+                    } else{
+                        alert("服务器错误");
+                    }
+                }
+            })
+        }else{
+
+            $('#message').show();
+
+        }
+
+
+    })
+</script>
+<script src="/js/BBS/uploadFile.js"></script>
+
+</body>
+</html>
+
+<!--聊天系统-->
+<script th:inline="javascript">
+    var basePath = [[${#httpServletRequest.getScheme() + "://" + #httpServletRequest.getServerName() + ":" + #httpServletRequest.getServerPort() + #httpServletRequest.getContextPath()}]];
+    var userid = [[${session.userid}]];
+</script>
+<script type="application/javascript" th:src="@{/layim/layui/layui.js}"></script>
+<script type="application/javascript" th:src="@{/js/admin/layuiim.js}"></script>

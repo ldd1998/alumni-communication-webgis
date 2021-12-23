@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:v-bind="http://www.w3.org/1999/xhtml" lang="ch">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="../../favicon.ico">
+
+    <title>城院校友</title>
+
+    <link rel="stylesheet" th:href="@{/css/news/news.css}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" th:href="@{/css/index/carousel.css}">
+    <script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
+    <link rel="stylesheet" type="text/css" th:href="@{/layui/css/layui.css}"/>
+    <script th:src="@{/layui/layui.js}"></script>
+    <script type="text/javascript" th:src="@{/js/common/navbar.js}"></script>
+
+    <style>
+        #desc{
+            text-indent: 37px;line-height: 37px;
+        }
+    </style>
+
+</head>
+<!--上导航栏-->
+<body>
+<div th:insert="~{index :: navbar}"></div>
+<div style="height: 80px;width: 100%"></div>
+
+
+<!--主体部分-->
+<div class="container higher" id="container">
+    <!-- 导航栏 -->
+    <div class="header">
+        <ol class="breadcrumb">
+            <li><i class="fa fa-home"></i>&nbsp;<a href="#">主页</a></li>
+            <li class="active">新闻中心</li>
+        </ol>
+    </div>
+<section>
+<div class="col-md-9">
+    <div class="row blog-content">
+        <div class="panel panel-default panel-blog">
+            <div class="panel-body" style="text-align: center">
+                <h3 class="blogsingle-title" th:text="${news.getNewsTitle()}"></h3>
+                <div class="row" style="padding-left: 280px">
+                    <ul class="blog-meta">
+                        <li class="pull-left">&nbsp;&nbsp;&nbsp;&nbsp;<i class="glyphicon glyphicon-calendar"></i></li>
+                        <li class="pull-left">2020-2-4</li>
+                        <li class="pull-left">&nbsp;|&nbsp;</li>
+                        <li class="pull-left"><i class="glyphicon glyphicon-eye-open"></i> 浏览 50 </li>
+                        <li class="pull-left">&nbsp;|&nbsp;</li>
+                        <li class="pull-left"><i class="glyphicon glyphicon-heart"></i> 喜欢 <span class="post-loves">60</span></li>
+                        <li class="pull-left">&nbsp;|&nbsp;</li>
+                        <li class="pull-left"><i class="glyphicon glyphicon-comment"></i> 评论 70</li>
+                    </ul>
+                </div>
+                <br>
+
+                <img style="margin-left: 20px;width: 600px" th:src="${news.getNewsImage()}" height="500">
+                <p>
+                    <strong style="font-size: medium;white-space: normal;text-align: center;" th:text="${news.getNewsImageTitle()}"></strong>
+                </p>
+                <p id="desc" th:text="${news.getNewsContent()}">
+
+                </p>
+                <!--                        <br/>-->
+                <!--                            <div class="blog-img">-->
+                <!--                                <img src="${info.thumbImage}" class="img-responsive"/></div>-->
+                <!--                            <div class="mb10"></div>-->
+                <!--                        <p>${info.content}</p><%&#45;&#45; postId &#45;&#45;%>-->
+            </div><!-- panel-body -->
+            <div class="widget-photoday">
+                <ul class="photo-meta">
+                    <!--                            <li><span><i class="fa fa-eye"></i> 浏览 (${info.views})</span></li>-->
+                    <!--                            <li><a href="javascript:;" onclick="lovePost(${info.infoId})" id="post-love-add">-->
+                    <!--                                <i class="fa fa-heart"></i> 喜欢 (-->
+                    <!--                                <arp class="post-loves">${info.loves}</arp>-->
+                    <!--                                )</a>-->
+                    <!--                            </li>-->
+                    <!--                            <li><a href="javascript:;" onclick="focusCommentPost()"><i class="fa fa-comment"></i> 评论</a></li>-->
+                </ul>
+            </div>
+        </div><!-- panel -->
+
+        <!--comment-list -->
+        <ol class="breadcrumb">
+            <li class="active"><i class="fa fa-comments-o"></i> 所有评论</li>
+        </ol>
+        <!--                <ul class="media-list comment-list" id="comment-list">-->
+        <!--                    <img class="center-block" src='${pageContext.request.contextPath}/assets/images/icon/loading/loader.gif'>-->
+        <!--                </ul>&lt;!&ndash; comment-list &ndash;&gt;-->
+
+        <!--登录可评论-->
+        <div class="mb20"></div>
+        <!--                <h5 class="subtitle mb5"><i class="fa fa-user"></i> ${SESSION_USER.trueName}：</h5>-->
+        <div class="mb20"></div>
+        <form method="post" action="${pageContext.request.contextPath}/news/comment.action" id="form-comment">
+                        <textarea name="content" maxlength="500" rows="5" class="form-control"
+                                  id="comment-content"></textarea>
+            <input hidden name="infoId" id="infoId" value="${info.infoId}">
+            <div class="mb10"></div>
+            <br>
+            <button class="btn btn-primary pull-right" onclick="commentPost()" type="button"><i
+                    class="fa fa-comment"></i> 发表评论
+            </button>
+            <br>
+            <br>
+            <include src="../common/footer.html"></include>
+        </form>
+    </div><!-- row -->
+</div>
+    <div class="col-md-3" th:fragment="news-hot">
+        <div class="panel panel-default panel-alt widget-messaging">
+            <div class="panel-heading">
+                <h1 class="panel-title" style="line-height: 30px">热门新闻<a href="#" class="glyphicon glyphicon-menu-right" style="float: right;line-height: 30px"></a></h1>
+            </div>
+            <ul class="folder-list" style="padding-top: 20px; padding-right: 20px">
+                <li th:each="news:${newsList}">
+                    <div class="media" style="">
+                        <a class="pull-left col-sm-4" style="max-height: 40px;" th:href="@{/news/newsDetail(newId=${news.getNewsId()})}">
+                            <img  class="img-responsive" th:src="${news.getNewsImage()}">
+                        </a>
+                        <div class="media-body" style="max-height: 40px;width: 280px">
+                            <a  class="email-summary" th:href="@{/news/newsDetail(newId=${news.getNewsId()})}" th:text="${news.getNewsTitle().substring(0,12)}"></a>
+                            <br>
+                            <small class="text-muted" th:text="${news.getNewsTime()}">
+                                发布于 ： 2020-2-2
+                            </small>
+                            <br>
+                        </div>
+                    </div>
+                    <hr >
+                </li>
+            </ul>
+        </div>
+    </div>
+</section>
+</div>
+<!-- 底部 -->
+<include src="../common/footer.html"></include>
+
+</div><!-- /.container -->
+<script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
+<script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery.min.js"><\/script>')</script>
+<script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</body>
+
+</html>
+
+<!--聊天系统-->
+<script th:inline="javascript">
+    var basePath = [[${#httpServletRequest.getScheme() + "://" + #httpServletRequest.getServerName() + ":" + #httpServletRequest.getServerPort() + #httpServletRequest.getContextPath()}]];
+    var userid = [[${session.userid}]];
+</script>
+<script type="application/javascript" th:src="@{/layim/layui/layui.js}"></script>
+<script type="application/javascript" th:src="@{/js/admin/layuiim.js}"></script>

@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mapper.CommentMapper">
+
+    <resultMap id="comment_user" type="com.entity.Comment">
+        <id column="c_id" property="id"></id>
+        <result column="content" property="content"></result>
+        <result column="parent_id" property="parentId"></result>
+        <result column="type" property="type"></result>
+        <result column="create_time" property="createTime"></result>
+        <result column="update_time" property="updateTime"></result>
+        <result column="like_count" property="likeCount"></result>
+        <result column="question_id" property="questionId"></result>
+        <association property="user" javaType="com.entity.UserInfo">
+            <id column="userid" jdbcType="VARCHAR" property="userid" />
+            <result column="name" jdbcType="VARCHAR" property="name" />
+            <result column="sex" jdbcType="VARCHAR" property="sex" />
+            <result column="uimage" jdbcType="VARCHAR" property="uimage" />
+            <result column="email" jdbcType="VARCHAR" property="email" />
+            <result column="mobilephone" jdbcType="VARCHAR" property="mobilephone" />
+        </association>
+    </resultMap>
+
+    <!-- 添加评论 -->
+    <insert id="createComment" parameterType="com.entity.Comment">
+        insert into `comment` values(null,#{content},#{parentId},#{type},#{user.userid},NOW(),NOW(),0,#{questionId})
+    </insert>
+
+    <!-- 查询一级评论评论 -->
+    <select id="queryCommentByQuestionId" resultMap="comment_user">
+        select
+            c1.id AS c_id,
+            content,
+            parent_id,
+            `type`,
+            create_time,
+            update_time,
+            like_count,
+            u2.userid AS u_id,
+            name,
+            sex,
+            uimage,
+            email,
+            mobilephone
+         FROM comment c1 INNER JOIN `user_info` u2
+        ON c1.user_id = u2.userid WHERE 1 = 1
+        <if test="type == 0">
+            and question_id = #{questionId} and `type` = #{type}
+        </if>
+        <if test="type >= 1">
+            and parent_id = #{questionId}
+            and `type` = #{type}
+        </if>
+        limit #{page},15
+    </select>
+
+    <!-- 获取回复数   评论数 -->
+    <select id="queryReplyCountById" resultType="Integer">
+        select count(id) from `comment` where 1= 1
+        <if test="commentId != 0 and commentId!= null">
+            and parent_id = #{commentId}
+        </if>
+        <if test="questionId != 0 and questionId != null">
+            and question_id = #{questionId}
+
+        </if>
+            and `type` = #{type};
+
+    </select>
+
+    <!-- 点赞评论 -->
+    <update id="like">
+        update `comment` set
+
+        <if test="likeOrOff == 0">
+            like_count = like_count-1
+        </if>
+        <if test="likeOrOff == 1">
+            like_count = like_count+1
+        </if>
+        where id = #{id}
+    </update>
+
+    <!-- 根据回复id 查询 回复评论 -->
+    <select id="queryReplyByCommentId" parameterType="Integer" resultMap="comment_user">
+        select
+            c1.id AS c_id,
+            content,
+            parent_id,
+            `type`,
+            create_time,
+            update_time,
+            like_count,
+            u2.id AS u_id,
+            nickName,
+            account_id,
+            sex,
+            face,
+            email,
+            mobile,
+            question_id
+         FROM `comment` c1 INNER JOIN `user` u2
+        ON c1.user_id = u2.id WHERE c1.id = #{id}
+    </select>
+</mapper>

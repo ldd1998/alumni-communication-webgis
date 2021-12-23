@@ -1,0 +1,51 @@
+.item {
+    border-bottom: 1px solid #f0f0f0;
+    display: block;
+    min-height: 50px;
+    position: relative;
+    padding: 20px 0;
+}
+
+.item a {
+    text-decoration: none;
+    color: inherit;
+    color: #09c;
+}
+
+.item .middle {
+    margin-right: 60px;
+    margin-left: 70px;
+}
+.item .title {
+    font-size: 16px;
+    margin: 0;
+    font-weight: 400;
+    line-height: 27px;
+}
+.forum-name {
+    color: #09c;
+}
+
+.thread-title:link {
+    color: #4e5e6a;
+}
+.thread-title:visited {
+    color: #828282;
+}
+.item .meta {
+    margin-top: 6px;
+    color: #b2b2b2;
+    font-size: 12px;
+}
+.img-circle {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    float: left;
+    cursor: pointer;
+}
+.comment {
+    position: absolute;
+    right: 4px;
+    top: 35px;
+}

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:v-bind="http://www.w3.org/1999/xhtml" lang="ch">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="../../favicon.ico">
+
+    <title>城院校友</title>
+
+<!--    <link rel="stylesheet" th:href="@{/css/bbs/bbs.css}">-->
+<!--    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css">-->
+
+    <link rel="stylesheet" th:href="@{/plugins/bootstrap/dist/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/index/carousel.css}">
+    <script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
+    <link rel="stylesheet" type="text/css" th:href="@{/layui/css/layui.css}"/>
+    <script type="text/javascript" th:src="@{/layui/layui.js}"></script>
+    <script type="text/javascript" th:src="@{/js/common/navbar.js}"></script>
+
+
+
+    <style>
+        dl{
+            height: 50px;
+        }
+    </style>
+</head>
+
+<body>
+<!--上导航栏-->
+<div th:insert="~{index :: navbar}"></div>
+<div style="height: 120px;width: 100%"></div>
+
+<div class="container">
+    <h2 th:text="${job.jobName}"></h2>
+    <hr>
+    <div class="row">
+        <!--<form  action='/news/getAllNews' id="form3" method='post' role="form">
+            <input type="hidden" name="page" id="pageNo" th:value="${page}">
+        </form>-->
+        <div  class="col-lg-8">
+            <dl class="row">
+                <dt class="col-sm-3"><span>公司名称：</span></dt>
+                <dd class="col-sm-9"><span th:text="${job.jobCompany}"></span></dd>
+            </dl>
+            <dl class="row">
+                <dt class="col-sm-3"><span>职位介绍：</span></dt>
+                <dd class="col-sm-9"><span th:text="${job.jobDesc}"></span></dd>
+            </dl>
+
+            <dl class="row">
+                <dt class="col-sm-3"><span>招聘人数：</span></dt>
+                <dd class="col-sm-9"><span th:text="${job.perCount}+'人'"></span></dd>
+            </dl>
+
+            <dl class="row">
+                <dt class="col-sm-3"><span>工作地址：</span></dt>
+                <dd class="col-sm-9"><span th:text="${job.jobAddress}"></span></dd>
+            </dl>
+
+            <dl class="row">
+                <dt class="col-sm-3"><span>发布时间：</span></dt>
+                <dd class="col-sm-9"><span th:text="${#temporals.format(job.jobTime,'yyyy-MM-dd HH:mm')}"></span></dd>
+            </dl>
+
+            <dl class="row">
+                <dt class="col-sm-3"><span>投递地址：</span></dt>
+                <dd class="col-sm-9"><span th:text="${job.jobEmail}"></span></dd>
+            </dl>
+
+        </div>
+    </div>
+</div>
+</body>
+</html>
+
+<!--聊天系统-->
+<script th:inline="javascript">
+    var basePath = [[${#httpServletRequest.getScheme() + "://" + #httpServletRequest.getServerName() + ":" + #httpServletRequest.getServerPort() + #httpServletRequest.getContextPath()}]];
+    var userid = [[${session.userid}]];
+</script>
+<script type="application/javascript" th:src="@{/layim/layui/layui.js}"></script>
+<script type="application/javascript" th:src="@{/js/admin/layuiim.js}"></script>

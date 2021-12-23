@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>完善个人信息</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" th:href="@{/layui/css/layui.css}" media="all">
+    <link rel="stylesheet" th:href="@{/layuiadmin/style/admin.css}" media="all">
+    <script th:inline="javascript">
+        var basePath = [[${#httpServletRequest.getScheme() + "://" + #httpServletRequest.getServerName() + ":" + #httpServletRequest.getServerPort() + #httpServletRequest.getContextPath()}]];
+    </script>
+</head>
+<body>
+
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-card-header">完善个人信息</div>
+                <div class="layui-card-body" pad15>
+                    <form class="layui-form">
+                        <div class="layui-form-item layui-hide">
+                            <label class="layui-form-label">userid</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="userid" lay-verify="required" lay-reqtext="userid名不能为空"
+                                       placeholder="请输入用户名" autocomplete="off" class="layui-input"  th:value="${stu.userid}">
+                            </div>
+                        </div>
+
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">用户名</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" name="username" lay-verify="required" lay-reqtext="用户名不能为空"
+                                           placeholder="请输入用户名" autocomplete="off" class="layui-input"  th:value="${stu.username}">
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">真实姓名</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" name="name" lay-verify="required" lay-reqtext="真实姓名不能为空"
+                                           placeholder="请输入真实姓名"
+                                           autocomplete="off" class="layui-input"  th:value="${stu.name}">
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label" style="margin-top: 25px">头像</label>
+                                <div class="layui-input-inline">
+                                    <img th:src="@{/images/background/head-ldd.png}"
+                                         style="margin-left:30px; width:100px;border-radius:50%;cursor: pointer"
+                                         title="点击修改头像" alt="头像" id="uimage">
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">邮箱</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" name="email" value="" lay-verify="email" autocomplete="off"
+                                           placeholder="请输入邮箱" class="layui-input"  th:value="${stu.email}">
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">学校</label>
+                                <div class="layui-input-block layui-input-inline" style="margin-left: 0px;">
+                                    <select name="school" lay-filter="required">
+                                        <option value="湖南城市学院">湖南城市学院</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">院系</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" name="faculty" value="" lay-verify="faculty" autocomplete="off"
+                                           placeholder="请输入所在院系" class="layui-input" th:value="${stu.faculty}" >
+                                </div>
+                            </div>
+                            <div>
+                        </div>
+
+
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">住址</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="address" value="" lay-verify="faculty" autocomplete="off"
+                                       placeholder="请输入住址" class="layui-input" th:value="${stu.address}">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">工作地址</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="workAddress" value="" lay-verify="faculty" autocomplete="off"
+                                       placeholder="请输入工作地址" class="layui-input" th:value="${stu.workAddress}">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">公司名称</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="company" value="" lay-verify="faculty" autocomplete="off"
+                                       placeholder="请输入公司名称" class="layui-input" th:value="${stu.company}">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">职位</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="position" value="" lay-verify="faculty" autocomplete="off"
+                                       placeholder="请输入当前职位" class="layui-input" th:value="${stu.position}">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label">入学时间</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" name="startime" class="layui-input"  th:value="${stu.startime}">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">性别</label>
+                            <div class="layui-input-block">
+                                <input type="radio" name="sex" value="男" title="男" checked>
+                                <input type="radio" name="sex" value="女" title="女">
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item">
+                            <div class="layui-input-block">
+                                <button type="submit" class="layui-btn" lay-submit="" lay-filter="demo1">立即提交</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript" th:src="@{/layui/jquery.min.js}"></script>
+<script type="text/javascript" th:src="@{/layui/layui.js}"></script>
+<script type="text/javascript" th:src="@{/js/admin/updateUserInfo.js}"></script>
+</body>
+</html>

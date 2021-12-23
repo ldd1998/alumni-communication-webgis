@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org" layout:decorator="secure_template"
+      xmlns:layout="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>发布问题</title>
+
+    <!-- 最新版本的 Bootstrap 核心 CSS 文件 -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="../../favicon.ico">
+
+    <link rel="stylesheet" th:href="@{/css/bbs/publish.css}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" th:href="@{/css/index/carousel.css}">
+    <script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
+    <link rel="stylesheet" type="text/css" th:href="@{/layui/css/layui.css}"/>
+    <script th:src="@{/layui/layui.js}"></script>
+    <script type="text/javascript" th:src="@{/js/common/navbar.js}"></script>
+
+
+
+    <style>
+
+    </style>
+</head>
+<body style="background: #efefef;">
+    <div th:insert="index :: navbar"></div>
+    <div style="height: 100px;width: 100%"></div>
+
+    <div class="row center-block container" style="background: white;">
+	  <div class="col-md-12 col-xs-12 col-sm-12 col-lg-12" style="padding: 2%;">
+		<form onsubmit="return questionSub()" th:action="@{/addQuestion}" method="post" >
+            <input name="id" type="hidden" th:value="${QUESTION == null ? '0' : QUESTION.id}"/>
+<!--			<div class="form-group pull-left" style="margin-right: 20px;">-->
+<!--                <label >选择分类(暂留)</label>-->
+<!--                <input class="form-control" placeholder="类别">-->
+<!--            </div>-->
+            <div class="form-group pull-left" style="width: 80%;">
+                <label >文章标题</label>
+                <input type="text" class="form-control" name="title" placeholder="输入问题标题" th:value="${QUESTION == null ? '' : QUESTION.title}">
+            </div>
+            <div class="form-group pull-left" style="width:100%;">
+                <label >文章内容(上传图片请选择下方上传附件):</label>
+                <div id="editor"></div>
+                <textarea id="content" name="description" style="width:100%; height:200px;display: none;" th:text="${QUESTION == null ? '' : QUESTION.description}"></textarea>
+            </div>
+            <div class="form-group pull-left">
+                <label >上传附件(上传成功自动返回地址)</label><br/>
+                <a href="javascript:;" class="file">选择文件
+                    <input id="fileUpload" type="file" >
+                </a>
+                <div id="img_url"></div>
+            </div>
+            <div class="form-group ">
+                <label style="width:100%;">选择标签</label>
+                <button name="tag_button" type="button" class="btn btn-default btn-sm" data-tag="java">
+                    <span class="glyphicon glyphicon-tag" aria-hidden="true"></span>java
+                </button>
+                <button name="tag_button" type="button" class="btn btn-default btn-sm tab_span" data-tag="spring">
+                    <span class="glyphicon glyphicon-tag" aria-hidden="true"></span>spring
+                </button>
+                <button name="tag_button" type="button" class="btn btn-default btn-sm tab_span" data-tag="spring boot">
+                    <span class="glyphicon glyphicon-tag" aria-hidden="true"></span>spring boot
+                </button>
+                <button name="tag_button" type="button" class="btn btn-default btn-sm tab_span" data-tag="Spring Cloud">
+                    <span class="glyphicon glyphicon-tag" aria-hidden="true"></span>Spring Cloud
+                </button>
+                <button name="tag_button" type="button" class="btn btn-default btn-sm tab_span" data-tag="redis">
+                    <span class="glyphicon glyphicon-tag" aria-hidden="true"></span>redis
+                </button>
+                <button name="tag_button" type="button" class="btn btn-default btn-sm tab_span" data-tag="mybatis">
+                    <span class="glyphicon glyphicon-tag" aria-hidden="true"></span>mybatis
+                </button>
+                <button name="tag_button" type="button" class="btn btn-default btn-sm tab_span" data-tag="Hibernate">
+                    <span class="glyphicon glyphicon-tag" aria-hidden="true"></span>Hibernate
+                </button>
+
+                <input type="text" name="tag" class="form-control" placeholder="请选择上方的标签按钮" th:value="${QUESTION == null ? '' : QUESTION.tag}" readonly="readonly">
+            </div>
+            <div class="form-group">
+                <!-- 警告框 -->
+                <div id="warn" class="alert alert-danger alert-dismissible" role="alert" style="display: none;">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <strong>内容不可为空！！！</strong>
+                </div>
+            </div>
+            <div class="form-group pull-right" style="margin-top: 50px;">
+                <button type="submit" class="btn btn-success">确定提交</button>
+            </div>
+		</form>
+	  </div>
+	</div>
+
+    <script th:src="@{/js/BBS/wangEditor.min.js}" ></script>
+    <script th:inline="JavaScript">
+        function questionSub(){
+            //表单校验
+            var title = $("input[name='title']").val();
+            var description = $("#content").val();
+            var tag = $("input[name='tag']").val();
+            if (title.length >0 && description.length > 0 && tag.length > 0) {
+
+                return true;
+
+            }else{
+
+                $("#warn").attr("style","display:block")
+                return false;
+            }
+        }
+
+        var E = window.wangEditor
+        var editor = new E('#editor')
+        var $text1 = $('#content')
+        editor.customConfig.onchange = function (html) {
+            // 监控变化，同步更新到 textarea
+            $text1.val(html)
+
+        }
+
+        //表情配置
+        editor.customConfig.emotions = [
+            {
+                // tab 的标题
+                title: '表情',
+                // type -> 'emoji' / 'image'
+                type: 'image',
+                // content -> 数组
+                content: [
+                    {
+                        alt: '[微笑]',
+                        src: '/layim/layui/images/face/0.gif'
+                    },
+                    {
+                        alt: '[贱笑]',
+                        src: '/layim/layui/images/face/1.gif'
+                    },
+                    {
+                        alt: '[大笑]',
+                        src: '/layim/layui/images/face/2.gif'
+                    },
+                    {
+                        alt: '[害羞]',
+                        src: '/layim/layui/images/face/3.gif'
+                    },
+                    {
+                        alt: '[可怜]',
+                        src: '/layim/layui/images/face/4.gif'
+                    },
+                    {
+                        alt: '[抠鼻]',
+                        src: '/layim/layui/images/face/5.gif'
+                    },
+                    {
+                        alt: '[惊讶]',
+                        src: '/layim/layui/images/face/6.gif'
+                    },
+                    {
+                        alt: '[腼腆]',
+                        src: '/layim/layui/images/face/7.gif'
+                    },
+                    {
+                        alt: '[调皮]',
+                        src: '/layim/layui/images/face/8.gif'
+                    },
+                    {
+                        alt: '[闭嘴]',
+                        src: '/layim/layui/images/face/9.gif'
+                    },
+                    {
+                        alt: '[鄙视]',
+                        src: '/layim/layui/images/face/10.gif'
+                    },
+                    {
+                        alt: '[萌萌哒]',
+                        src: '/layim/layui/images/face/11.gif'
+                    },
+                    {
+                        alt: '[大哭]',
+                        src: '/layim/layui/images/face/12.gif'
+                    },
+                    {
+                        alt: '[偷笑]',
+                        src: '/layim/layui/images/face/13.gif'
+                    },
+                    {
+                        alt: '[亲亲]',
+                        src: '/layim/layui/images/face/14.gif'
+                    },
+                    {
+                        alt: '[恶心]',
+                        src: '/layim/layui/images/face/15.gif'
+                    },
+                    {
+                        alt: '[么么哒]',
+                        src: '/layim/layui/images/face/16.gif'
+                    },
+                    {
+                        alt: '[什么鬼]',
+                        src: '/layim/layui/images/face/17.gif'
+                    },
+                    {
+                        alt: '[右呵呵]',
+                        src: '/layim/layui/images/face/18.gif'
+                    },
+                    {
+                        alt: '[左呵呵]',
+                        src: '/layim/layui/images/face/19.gif'
+                    },
+                    {
+                        alt: '[别吵吵]',
+                        src: '/layim/layui/images/face/20.gif'
+                    }
+                ]
+            }
+        ]
+
+        // 或者 var editor = new E( document.getElementById('editor') )
+        editor.create()
+        //设置富文本的值
+        editor.txt.html([[${QUESTION == null ? '' : QUESTION.description}]])
+        // 初始化 textarea 的值
+        $text1.val(editor.txt.html())
+
+        //声明tag数组
+        var tagArray = new Array();
+
+        //如果输入框原本有值按钮高亮
+        if ($('input[name="tag"]').val().length != 0){
+
+            //把标签的value 值转成数组
+            var tagValArray = $('input[name="tag"]').val().split(',');
+
+            for (var i =0;i < $("button[name='tag_button']").length;i++){
+
+                for (var j=0;j < tagValArray.length;j++){
+                    if ($("button[name='tag_button']").eq(i).attr("data-tag") == tagValArray[j]) {
+
+                        $("button[name='tag_button']").eq(i).attr("class","btn btn-info btn-sm tab_span");
+
+                        tagArray.push($("button[name='tag_button']").eq(i).attr("data-tag"));
+                    }
+                }
+
+            }
+
+            console.log(tagArray.toString())
+        }
+
+
+
+
+        $("button[name='tag_button']").click(function (event) {
+
+            if ($(this).attr("class") == "btn btn-default btn-sm tab_span" || $(this).attr("class")== "btn btn-default btn-sm"){
+
+                tagArray.push($(this).attr("data-tag"));
+
+                $('input[name="tag"]').val(tagArray.toString())
+
+                $(this).attr("class","btn btn-info btn-sm tab_span")
+
+            }else{
+
+                var index = tagArray.indexOf($(this).attr("data-tag"));
+                console.log(tagArray.indexOf($(this).attr("data-tag")))
+                if (index > -1) {
+                    tagArray.splice(index, 1);
+
+                }
+
+                $('input[name="tag"]').val(tagArray.toString())
+                $(this).attr("class","btn btn-default btn-sm tab_span")
+            }
+            console.log(tagArray.length)
+        })
+    </script>
+<script src="/js/BBS/uploadFile.js"></script>
+
+</body>
+</html>
+
+<!--聊天系统-->
+<script th:inline="javascript">
+    var basePath = [[${#httpServletRequest.getScheme() + "://" + #httpServletRequest.getServerName() + ":" + #httpServletRequest.getServerPort() + #httpServletRequest.getContextPath()}]];
+    var userid = [[${session.userid}]];
+</script>
+<script type="application/javascript" th:src="@{/layim/layui/layui.js}"></script>
+<script type="application/javascript" th:src="@{/js/admin/layuiim.js}"></script>

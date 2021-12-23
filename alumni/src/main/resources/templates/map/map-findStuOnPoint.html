@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css">
+
+</head>
+<body style="height: 230px;width:310px;background-color:#d9faed">
+<table class="table">
+    <!--<caption>班级成员列表</caption>-->
+    <tbody>
+    <tr th:each="userInfo:${userInfos}">
+        <td>
+            <div class="" >
+                <div class="" style="float: left;margin-left: 10px">
+                    <img th:src="${userInfo.uimage}" width="80" class="img-rounded"/>
+                </div>
+                <div class="" style="float:left;margin-left: 6px">
+                    <p th:text="${userInfo.name}" href="#" style="color:#3636d7;font-size: 15px;line-height: 10px;margin-top: 3px">刘冬冬</p>
+                    <p th:text="${userInfo.address}" style="font-size: 10px;line-height: 10px"><span class="glyphicon glyphicon-map-marker">&nbsp;</span>山东省郓城菏泽市</p>
+                    <p th:text="${userInfo.position}" style="font-size: 10px;line-height: 10px"><span class="glyphicon glyphicon-briefcase">&nbsp;</span>地理信息科学</p>
+                    <p th:text="${userInfo.mobilephone}" style="line-height: 10px"><span class="glyphicon glyphicon-phone">&nbsp;</span>18865015355</p>
+                </div>
+                <div class="">
+                    <a style="margin-top:25px;margin-left: 6px" class="btn btn-success" onclick="addFriends()" th:href="'/class/addFriends?fuserid='+${userInfo.userid}" role="button">添加好友</a>
+                </div>
+            </div>
+        </td>
+    </tr>
+    </tbody>
+</table>
+<div style="height: 20px;width: 50px;margin-left: 150px" class="bun btn-success" onclick="f()">下一页</div>
+</body>
+</html>
+<script>
+    function f(){
+        window.location.href = "#"
+    }
+</script>

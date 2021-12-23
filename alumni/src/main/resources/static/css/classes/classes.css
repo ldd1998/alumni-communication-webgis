@@ -1,0 +1,15 @@
+td{
+    vertical-align: middle !important;
+}
+h5{
+    margin-top: 10px !important;
+    margin-bottom: 10px !important;
+    color: gray;
+}
+p{
+    color: gray;
+}
+hr{
+    margin-top: 2px !important;
+    margin-bottom: 2px !important;
+}

@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:v-bind="http://www.w3.org/1999/xhtml" lang="ch">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="../../favicon.ico">
+
+    <title>城院校友</title>
+
+    <link rel="stylesheet" th:href="@{/css/classes/classes.css}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" th:href="@{/css/index/carousel.css}">
+    <script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
+    <link rel="stylesheet" type="text/css" th:href="@{/layui/css/layui.css}"/>
+    <script th:src="@{/layui/layui.js}"></script>
+    <script type="text/javascript" th:src="@{/js/common/navbar.js}"></script>
+
+
+</head>
+
+<body>
+<!--上导航栏-->
+<div th:insert="~{index :: navbar}"></div>
+<!--<div style="height: 60px;width: 100%"></div>-->
+
+<!--主体部分-->
+
+<div class="container" style="margin-top: 80px">
+    <!-- 导航栏 -->
+    <div class="header">
+        <ol class="breadcrumb">
+            <li><i class="fa fa-home"></i>&nbsp;<a href="#" style="color: #0000FF">主页</a></li>
+            <li class="active">班级录</li>
+        </ol>
+    </div>
+
+    <div class="col-md-9 col-xs-9">
+        <br>
+        <form class="form-inline" th:action="@{/classes/queryClassesByClassNum}">
+            <div class="form-group">
+                <label class="sr-only" for="exampleInputAmount">输入要查找的班级号码</label>
+                <div class="input-group">
+                    <input type="text" name="classNum" class="form-control" id="exampleInputAmount" placeholder="输入要查找的班级">
+                    <div class="input-group-addon">班级</div>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">查找</button>
+        </form>
+        <br>
+        <h3>班级列表</h3>
+        <br>
+        <table class="table table-striped table-hover text-center">
+            <thead class="">
+            <tr style="background-color: #12a182">
+                <td>班级名称</td>
+                <td>班级号码</td>
+                <td>班级简介</td>
+                <td>创建时间</td>
+                <td>操作选项</td>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="class : ${classList}">
+                <td th:text="${class.className}"></td>
+                <td th:text="${class.classNum}"></td>
+                <td th:text="${class.classLabel}"></td>
+                <td th:text="${class.classCreateTime}"></td>
+
+                <td>
+<!--                    <button  class="btn btn-success">加入</button>-->
+                    <a th:href="@{/classes/classDetail(classId=${class.classId},classNum=${class.classNum},page=1,limit=8)}">
+                        <button  class="btn btn-success">详情</button>
+                    </a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <!--layui 分页-->
+        <div id="demo3" class="text-center"></div>
+    </div>
+    <!--班级页面右侧-->
+    <div class="col-md-3 col-xs-3" th:fragment="classes-right">
+        <div>
+            <h5>班级录信息</h5>
+            <div>
+                <p><span class="glyphicon glyphicon-flag">&nbsp;</span>班级总数：20个班级</p>
+                <hr>
+                <p><span class="glyphicon glyphicon-flag">&nbsp;</span>已加入校友：33</p>
+                <hr>
+            </div>
+            <br>
+            <h5>人气排行</h5>
+            <div>
+                <p><span class="glyphicon glyphicon-home">&nbsp;</span>1702401(40人)</p>
+                <hr>
+                <p><span class="glyphicon glyphicon-home">&nbsp;</span>1702402(40人)</p>
+                <hr>
+                <p><span class="glyphicon glyphicon-home">&nbsp;</span>1702601(38人)</p>
+                <hr>
+                <p><span class="glyphicon glyphicon-home">&nbsp;</span>1702602(35人)</p>
+                <hr>
+            </div>
+            <br>
+            <h5>我的班级</h5>
+            <p><span class="glyphicon glyphicon-home">&nbsp;</span>1702401</p>
+            <hr>
+            <br>
+            <h5>最新加入校友</h5>
+
+            <div>
+                <div class="pull-left" style="margin-right: 20px">
+                    <img th:src="@{/images/background/head-ldd.png}" width="60" height="60">
+                </div>
+                <div>
+                    <p>刘冬</p>
+                    <br>
+                    <p>2017-10-1加入</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div> <!-- /container -->
+
+
+
+
+</div><!-- /.container -->
+<script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
+<script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery.min.js"><\/script>')</script>
+<script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</body>
+
+</html>
+
+
+<!--聊天系统-->
+<script th:inline="javascript">
+    var basePath = [[${#httpServletRequest.getScheme() + "://" + #httpServletRequest.getServerName() + ":" + #httpServletRequest.getServerPort() + #httpServletRequest.getContextPath()}]];
+    var userid = [[${session.userid}]];
+</script>
+<script type="application/javascript" th:src="@{/layim/layui/layui.js}"></script>
+<script type="application/javascript" th:src="@{/js/admin/layuiim.js}"></script>
+
+<!--layui分页-->
+<!--<script src="../../layui/layui.js"></script>-->
+<script type="text/javascript" th:inline="javascript">
+    layui.use(['laypage', 'layer'], function () {
+        var page = [[${page}]]
+        var laypage = layui.laypage, layer = layui.layer;
+        //自定义首页、尾页、上一页、下一页文本
+        laypage.render({
+            elem: 'demo3'
+            , count: 100//数据总数，从服务端得到
+            , first: '首页'
+            , last: '尾页'
+            , curr: page //获取起始页
+            , prev: '<em>上一页</em>'
+            , next: '<em>下一页</em>'
+            ,jump: function(obj, first){
+                //obj包含了当前分页的所有参数，比如：
+                console.log(obj.curr); //得到当前页，以便向服务端请求对应页的数据。
+                console.log(obj.limit); //得到每页显示的条数
+                //window.location.href="/admin/studentList"
+
+                //首次不执行
+                if(!first){
+                    //do something
+                    console.log("首次不执行");
+                    window.location.href="/classes?page="+obj.curr+"&limit=5";
+                }
+            }
+        });
+    });
+</script>
+<script th:inline="javascript">
+    var s = [[${session.userid}]]
+    if(s==null){
+        alert("请先登陆！")
+        window.location.href="/login"
+    }
+</script>

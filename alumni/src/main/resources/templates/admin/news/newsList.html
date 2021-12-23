@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ch">
+<head>
+    <base th:href="${#request.getScheme()}+'://'+${#request.getServerName()}+':'+${#request.getServerPort()}+${#request.getContextPath()}">
+    <meta charset="UTF-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>校友清单</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/layui/css/layui1.css}"/>
+
+
+    <link rel="stylesheet" type="text/css" th:href="@{/css/animate.css}"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css">
+    <script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
+
+    <script th:inline="javascript">
+        var basePath = [[${#httpServletRequest.getScheme() + "://" + #httpServletRequest.getServerName() + ":" + #httpServletRequest.getServerPort() + #httpServletRequest.getContextPath()}]];
+    </script>
+</head>
+<body style="margin:10px;background-color: white">
+
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-header"><h4>校友管理-新闻信息管理</h4></div>
+            <div class="card-body">
+                <form name="form2" id="fm3" action="/stu" method="post">
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead>
+                            <tr>
+                                <th>
+                                    <label class="lyear-checkbox checkbox-primary">
+                                        <input type="checkbox" id="check-all" ><span></span>
+                                    </label>
+                                </th>
+                                <th>新闻id</th>
+                                <th>新闻标题</th>
+                                <th>新闻内容</th>
+                                <th>发布id</th>
+                                <th>创建时间</th>
+                                <th>图片预览</th>
+                                <th>操作</th>
+
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="news : ${newsList}">
+                                <td>
+                                    <label class="lyear-checkbox checkbox-primary">
+                                        <input type="checkbox" name="userId" th:value="${news.newsId}"><span></span>
+                                    </label>
+                                </td>
+                                <td th:text="${news.newsId}"></td>
+                                <td th:text="${news.newsTitle}"></td>
+                                <td th:text="${news.newsContent.substring(0,15)}"></td>
+                                <td th:text="${news.newsUserid}"></td>
+                                <td th:text="${news.newsTime}"></td>
+                                <td><img th:src="${news.newsImage}" alt="没有图片" width="20px" height="20px"></td>
+                                <td>
+                                    <div class="btn-group">
+                                        <a class="btn btn-xs btn-danger" th:href="@{'/admin/deleteUserByUserid?userid='+${news.newsId}}"  title="删除" data-toggle="tooltip"><i class="mdi mdi-window-close"></i> 删除</a>
+                                    </div>
+                                    <div class="btn-group">
+                                        <a class="btn btn-xs btn-success" th:onclick="updateUserInfo([[${news.newsId}]])"  title="修改" data-toggle="tooltip"><i class="mdi mdi-window-close"></i> 修改</a>
+                                    </div>
+                                    <div class="btn-group">
+                                        <a class="btn btn-xs btn-info" th:onclick="updateUserInfo([[${news.newsId}]])"  title="详情" data-toggle="tooltip"><i class="mdi mdi-window-close"></i> 详情</a>
+                                    </div>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </form>
+                <div id="demo3" class="text-center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+<!--翻页-->
+<script th:src="@{/layui/layui.js}"></script>
+<script type="text/javascript" th:inline="javascript">
+    layui.use(['laypage', 'layer'], function () {
+        var page = [[${page}]]
+        var laypage = layui.laypage, layer = layui.layer;
+        //自定义首页、尾页、上一页、下一页文本
+        laypage.render({
+            elem: 'demo3'
+            , count: 100//数据总数，从服务端得到
+            , first: '首页'
+            , last: '尾页'
+            , curr: page //获取起始页
+            , prev: '<em>上一页</em>'
+            , next: '<em>下一页</em>'
+            ,jump: function(obj, first){
+                //obj包含了当前分页的所有参数，比如：
+                console.log(obj.curr); //得到当前页，以便向服务端请求对应页的数据。
+                console.log(obj.limit); //得到每页显示的条数
+                //window.location.href="/admin/studentList"
+
+                //首次不执行
+                if(!first){
+                    //do something
+                    console.log("首次不执行");
+                    window.location.href="/admin/news?page="+obj.curr+"&limit="+obj.limit;
+                }
+            }
+        });
+    });
+</script>
+<!--弹出修改界面-->
+<!--<script th:src="@{/js/admin/stuList.js}"></script>-->
+</html>

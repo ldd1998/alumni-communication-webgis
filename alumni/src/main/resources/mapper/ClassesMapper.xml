@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mapper.ClassesMapper">
+    
+    <select id="queryClassesByPage" resultType="com.entity.Classes">
+        select * from tb_class limit #{page},#{limit}
+    </select>
+    
+    <select id="queryClassesByClassNum" resultType="com.entity.Classes">
+        select * from tb_class where classNum = #{classNum} limit 0,5
+    </select>
+    
+    <select id="queryClassByClassId" resultType="com.entity.Classes">
+        select * from tb_class where classId = #{classId}
+    </select>
+        
+    <insert id="addFriends">
+        insert into friends (userid,fuserid) value(#{userid},#{fuserid})
+    </insert>
+
+</mapper>

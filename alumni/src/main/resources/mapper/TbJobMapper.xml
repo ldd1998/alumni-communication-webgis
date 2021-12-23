@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mapper.TbJobMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.entity.TbJob">
+        <id column="job_id" property="jobId" />
+        <result column="job_company" property="jobCompany" />
+        <result column="job_name" property="jobName" />
+        <result column="job_desc" property="jobDesc" />
+        <result column="userid" property="userid" />
+        <result column="job_time" property="jobTime" />
+        <result column="per_count" property="perCount" />
+        <result column="job_address" property="jobAddress" />
+        <result column="job_email" property="jobEmail" />
+        <result column="check_status" property="checkStatus"/>
+        <result column="check_opinion" property="checkOpinion"/>
+    </resultMap>
+
+    <resultMap id="JobPage" type="com.entity.TbJob" extends="BaseResultMap">
+        <association property="tbStu" javaType="com.entity.UserInfo">
+            <result property="userid" column="userid"/>
+            <result property="name" column="name"/>
+        </association>
+    </resultMap>
+
+    <select id="getAllJob" resultMap="JobPage">
+        SELECT tb_job.*,user_info.userid,user_info.`name` FROM tb_job,user_info
+        <where>
+            tb_job.userid=user_info.userid
+            <if test="we.entity.keyword!=null and we.entity.keyword!=''">
+                AND tb_job.job_name like '%${we.entity.keyword}%'
+            </if>
+        </where>
+        <if test="we.entity.cid!=null and we.entity.cid!=''">
+            <if test="we.entity.cid==1">
+                order by tb_job.job_time desc
+            </if>
+            <if test="we.entity.cid==2">
+                order by tb_job.job_time asc
+            </if>
+        </if>
+    </select>
+
+    <select id="getJobById" parameterType="int" resultMap="JobPage">
+        SELECT tb_job.*,user_info.userid,user_info.`name` FROM tb_job,user_info WHERE tb_job.userid=user_info.userid AND  tb_job.job_id=#{jobId}
+    </select>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        job_id, job_company, job_name, job_desc, userid, job_time, per_count, job_address
+    </sql>
+
+    <select id="queryJobListByLimit" resultType="com.entity.TbJob">
+        select * from tb_job limit #{page},#{limit};
+    </select>
+
+</mapper>

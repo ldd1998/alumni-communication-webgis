@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:v-bind="http://www.w3.org/1999/xhtml" lang="ch">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="../../favicon.ico">
+
+    <title>城院校友</title>
+
+
+    <link rel="stylesheet" th:href="@{/openlayers/ol.css}">
+    <link rel="stylesheet" th:href="@{/css/map/map.css}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" th:href="@{/css/index/carousel.css}">
+    <script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
+    <link rel="stylesheet" type="text/css" th:href="@{/layui/css/layui.css}"/>
+    <script th:src="@{/layui/layui.js}"></script>
+    <script type="text/javascript" th:src="@{/js/common/navbar.js}"></script>
+    <script type="text/javascript" th:src="@{/openlayers/ol.js}"></script>
+    <!--聊天系统-->
+    <script th:inline="javascript">
+        var basePath = [[${#httpServletRequest.getScheme() + "://" + #httpServletRequest.getServerName() + ":" + #httpServletRequest.getServerPort() + #httpServletRequest.getContextPath()}]];
+        var userid = [[${session.userid}]];
+    </script>
+    <script type="application/javascript" th:src="@{/layim/layui/layui.js}"></script>
+    <script type="application/javascript" th:src="@{/js/admin/layuiim.js}"></script>
+    <script type="text/javascript" th:src="@{/js/map/map.js}"></script>
+
+</head>
+<!--上导航栏-->
+<body>
+<div th:insert="~{index :: navbar}"></div>
+<div style="height: 60px;width: 100%"></div>
+
+<!--地图-->
+<div id="map"></div>
+<!--侧边栏-->
+<div th:fragment="map-left" id="left-navbar" >
+    <ul class="layui-nav layui-nav-tree" lay-filter="test" style="height: 100%;">
+        <!-- 侧边导航: <ul class="layui-nav layui-nav-tree layui-nav-side"> -->
+        <li class="layui-nav-item"><a href="javascript:;">地图总览</a></li>
+
+        <li class="layui-nav-item">
+            <a href="javascript:;">统计分析</a>
+            <dl class="layui-nav-child">
+                <dd><a th:href="@{/map/density}">各省份校友密度图</a></dd>
+                <dd><a th:href="@{/map/distribution}">各城市校友分布图</a></dd>
+                <dd><a href="javascript:;">跳转</a></dd>
+            </dl>
+        </li>
+        <li class="layui-nav-item">
+            <a href="javascript:;">查找校友</a>
+            <dl class="layui-nav-child">
+                <dd><a href="javascript:;">221</a></dd>
+                <dd><a href="javascript:;">212</a></dd>
+                <dd><a href="javascript:;">212</a></dd>
+            </dl>
+        </li>
+        <li class="layui-nav-item"><a href="javascript:;">测试</a></li>
+        <li class="layui-nav-item"><a href="javascript:;">测试2</a></li>
+    </ul>
+
+</div>
+<!-- 底部 -->
+<include src="../common/footer.html"></include>
+
+</div><!-- /.container -->
+
+
+<script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
+<script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery.min.js"><\/script>')</script>
+<script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script th:src="@{/js/map/map.js}"></script>
+<script>
+    var pureCoverage = false;
+    // if this is just a coverage or a group of them, disable a few items,
+    // and default to jpeg format
+    var format = 'image/png';
+    var bounds = [20, -90,
+        180, 73.60415649414062];
+    if (pureCoverage) {
+        document.getElementById('antialiasSelector').disabled = true;
+        document.getElementById('jpeg').selected = true;
+        format = "image/jpeg";
+    }
+
+    var supportsFiltering = true;
+    if (!supportsFiltering) {
+        document.getElementById('filterType').disabled = true;
+        document.getElementById('filter').disabled = true;
+        document.getElementById('updateFilterButton').disabled = true;
+        document.getElementById('resetFilterButton').disabled = true;
+    }
+
+    var mousePositionControl = new ol.control.MousePosition({
+        className: 'custom-mouse-position',
+        target: document.getElementById('location'),
+        coordinateFormat: ol.coordinate.createStringXY(5),
+        undefinedHTML: '&nbsp;'
+    });
+    var untiled = new ol.layer.Image({
+        source: new ol.source.ImageWMS({
+            ratio: 1,
+            url: 'http://localhost:8080/geoserver/wms',
+            params: {'FORMAT': format,
+                'VERSION': '1.1.1',
+                "STYLES": '',
+                "LAYERS": 'world_group',
+                "exceptions": 'application/vnd.ogc.se_inimage',
+            }
+        })
+    });
+    var tiled = new ol.layer.Tile({
+        visible: false,
+        source: new ol.source.TileWMS({
+            url: 'http://localhost:8080/geoserver/wms',
+            params: {'FORMAT': format,
+                'VERSION': '1.1.1',
+                tiled: true,
+                "STYLES": '',
+                "LAYERS": 'world_group',
+                "exceptions": 'application/vnd.ogc.se_inimage',
+                tilesOrigin: -180 + "," + -90
+            }
+        })
+    });
+    var projection = new ol.proj.Projection({
+        code: 'EPSG:4326',
+        units: 'degrees',
+        axisOrientation: 'neu',
+        global: true
+    });
+    var zoomFactorSize = 5;
+    var map = new ol.Map({
+        controls: ol.control.defaults({
+            attribution: false
+        }).extend([mousePositionControl]),
+        target: 'map',
+        layers: [
+            untiled,
+            tiled
+        ],
+        view: new ol.View({
+            projection: projection,
+            zoomFactor: Math.pow(3, 1 / zoomFactorSize),
+        })
+    });
+    map.getView().on('change:resolution', function(evt) {
+        var resolution = evt.target.get('resolution');
+        var units = map.getView().getProjection().getUnits();
+        var dpi = 25.4 / 0.28;
+        var mpu = ol.proj.METERS_PER_UNIT[units];
+        var scale = resolution * mpu * 39.37 * dpi;
+        if (scale >= 9500 && scale <= 950000) {
+            scale = Math.round(scale / 1000) + "K";
+        } else if (scale >= 950000) {
+            scale = Math.round(scale / 1000000) + "M";
+        } else {
+            scale = Math.round(scale);
+        }
+        //document.getElementById('scale').innerHTML = "Scale = 1 : " + scale;
+    });
+    map.getView().fit(bounds, map.getSize());
+    map.on('singleclick', function(evt) {
+        document.getElementById('nodelist').innerHTML = "Loading... please wait...";
+        var view = map.getView();
+        var viewResolution = view.getResolution();
+        var source = untiled.get('visible') ? untiled.getSource() : tiled.getSource();
+        var url = source.getGetFeatureInfoUrl(
+            evt.coordinate, viewResolution, view.getProjection(),
+            {'INFO_FORMAT': 'text/html', 'FEATURE_COUNT': 50});
+        if (url) {
+            document.getElementById('nodelist').innerHTML = '<iframe seamless src="' + url + '"></iframe>';
+        }
+    });
+
+    // sets the chosen WMS version
+    function setWMSVersion(wmsVersion) {
+        map.getLayers().forEach(function(lyr) {
+            lyr.getSource().updateParams({'VERSION': wmsVersion});
+        });
+        if(wmsVersion == "1.3.0") {
+            origin = bounds[1] + ',' + bounds[0];
+        } else {
+            origin = bounds[0] + ',' + bounds[1];
+        }
+        tiled.getSource().updateParams({'tilesOrigin': origin});
+    }
+
+    // Tiling mode, can be 'tiled' or 'untiled'
+    function setTileMode(tilingMode) {
+        if (tilingMode == 'tiled') {
+            untiled.set('visible', false);
+            tiled.set('visible', true);
+        } else {
+            tiled.set('visible', false);
+            untiled.set('visible', true);
+        }
+    }
+
+    function setAntialiasMode(mode) {
+        map.getLayers().forEach(function(lyr) {
+            lyr.getSource().updateParams({'FORMAT_OPTIONS': 'antialias:' + mode});
+        });
+    }
+
+    // changes the current tile format
+    function setImageFormat(mime) {
+        map.getLayers().forEach(function(lyr) {
+            lyr.getSource().updateParams({'FORMAT': mime});
+        });
+    }
+
+    function setStyle(style){
+        map.getLayers().forEach(function(lyr) {
+            lyr.getSource().updateParams({'STYLES': style});
+        });
+    }
+
+    function setWidth(size){
+        var mapDiv = document.getElementById('map');
+        var wrapper = document.getElementById('wrapper');
+
+        if (size == "auto") {
+            // reset back to the default value
+            mapDiv.style.width = null;
+            wrapper.style.width = null;
+        }
+        else {
+            mapDiv.style.width = size + "px";
+            wrapper.style.width = size + "px";
+        }
+        // notify OL that we changed the size of the map div
+        map.updateSize();
+    }
+
+    function setHeight(size){
+        var mapDiv = document.getElementById('map');
+        if (size == "auto") {
+            // reset back to the default value
+            mapDiv.style.height = null;
+        }
+        else {
+            mapDiv.style.height = size + "px";
+        }
+        // notify OL that we changed the size of the map div
+        map.updateSize();
+    }
+
+    function updateFilter(){
+        if (!supportsFiltering) {
+            return;
+        }
+        var filterType = document.getElementById('filterType').value;
+        var filter = document.getElementById('filter').value;
+        // by default, reset all filters
+        var filterParams = {
+            'FILTER': null,
+            'CQL_FILTER': null,
+            'FEATUREID': null
+        };
+        if (filter.replace(/^\s\s*/, '').replace(/\s\s*$/, '') != "") {
+            if (filterType == "cql") {
+                filterParams["CQL_FILTER"] = filter;
+            }
+            if (filterType == "ogc") {
+                filterParams["FILTER"] = filter;
+            }
+            if (filterType == "fid")
+                filterParams["FEATUREID"] = filter;
+        }
+        // merge the new filter definitions
+        map.getLayers().forEach(function(lyr) {
+            lyr.getSource().updateParams(filterParams);
+        });
+    }
+
+    function resetFilter() {
+        if (!supportsFiltering) {
+            return;
+        }
+        document.getElementById('filter').value = "";
+        updateFilter();
+    }
+
+    // shows/hide the control panel
+    function toggleControlPanel(){
+        var toolbar = document.getElementById("toolbar");
+        if (toolbar.style.display == "none") {
+            toolbar.style.display = "block";
+        }
+        else {
+            toolbar.style.display = "none";
+        }
+        map.updateSize()
+    }
+
+</script>
+
+
+</body>
+</html>
+<script>
+    <!--------------------------------------------导航和侧边栏栏----------------------------------------------->
+    layui.use('element', function(){
+        var element = layui.element; //导航的hover效果、二级菜单等功能，需要依赖element模块
+
+        //监听导航点击
+        element.on('nav(demo)', function(elem){
+            //console.log(elem)
+            layer.msg(elem.text()+"1");
+        });
+    });
+</script>

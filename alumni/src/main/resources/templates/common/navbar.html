@@ -1,0 +1,54 @@
+<!--<link type="text/css" href="../layui/css/layui.css">-->
+<!--<script src="../layui/layui.js"></script>-->
+
+<html xmlns:th="http://www.thymeleaf.org" lang="ch">
+<head>
+<!--    <script src="../../js/jquery-1.11.1-min.js"></script>-->
+    <script src="../../js/navbar.js"></script>
+    <link rel="stylesheet" href="../../layui/css/layui.css">
+
+    <script th:href="@{/layui/jquery.min.js}"></script>
+</head>
+
+<div class="layui-layout layui-layout-admin">
+    <div class="layui-header">
+        <div class="layui-logo">hncu校友系统</div>
+        <!-- 头部区域（可配合layui已有的水平导航） -->
+        <ul class="layui-nav layui-layout-left">
+            <li class="layui-nav-item"><a href="../home/index.html">首页</a></li>
+            <li class="layui-nav-item"><a href="../news/news.html">新闻中心</a></li>
+            <li class="layui-nav-item"><a href="../classes/classes.html">班级录</a></li>
+            <li class="layui-nav-item"><a href="../map/map.html">校友地图</a></li>
+            <li class="layui-nav-item"><a href="">校友论坛</a></li>
+        </ul>
+        <ul class="layui-nav layui-layout-right">
+            <li class="layui-nav-item">
+                <a href="javascript:;">
+                    <img src="http://t.cn/RCzsdCq" class="layui-nav-img">
+                    ldd
+                </a>
+                <dl class="layui-nav-child">
+                    <dd><a href="">基本资料</a></dd>
+                    <dd><a href="">安全设置</a></dd>
+                    <dd><a href="">消息中心<span class="layui-badge-dot"></span></a></dd>
+                    <dd><a href="">退出登陆</a></dd>
+                </dl>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<script src="../../layui/layui.js"></script>
+
+<script>
+    layui.use('element', function(){
+        var element = layui.element; //导航的hover效果、二级菜单等功能，需要依赖element模块
+
+        //监听导航点击
+        element.on('nav(demo)', function(elem){
+            //console.log(elem)
+            layer.msg(elem.text()+"1");
+        });
+    });
+</script>
+</html>

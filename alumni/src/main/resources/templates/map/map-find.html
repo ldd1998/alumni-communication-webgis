@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:v-bind="http://www.w3.org/1999/xhtml" lang="ch">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="../../favicon.ico">
+
+    <title>城院校友</title>
+
+    <link rel="stylesheet" th:href="@{/openlayers/ol.css}">
+    <link rel="stylesheet" th:href="@{/css/map/map.css}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" th:href="@{/css/index/carousel.css}">
+    <script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
+    <link rel="stylesheet" type="text/css" th:href="@{/layui/css/layui.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/layui/css/layui.css}"/>
+    <script type="text/javascript" th:src="@{/layui/layui.js}"></script>
+
+    <!--百度地图相关-->
+    <script src="//api.map.baidu.com/api?v=1.0&type=webgl&ak=1XjLLEhZhQNUzd93EjU5nOGQ"></script>
+    <script src="https://mapv.baidu.com/gl/examples/static/common.js"></script>
+    <script src="//mapv.baidu.com/build/mapv.min.js"></script>
+    <script src="https://code.bdstatic.com/npm/mapvgl@1.0.0-beta.125/dist/mapvgl.min.js"></script>
+
+    <style>
+        #up-map-div{
+            top:30px;
+            left:30px;
+            position:absolute;
+            z-index:9999;
+            border:1px solid blue;
+            background-color:#FFFFFF;
+        }
+        #up-map-div2{
+            top:30px;
+            left:30px;
+            position:absolute;
+            z-index:9999;
+            border:1px solid blue;
+        }
+    </style>
+</head>
+<body>
+<!--上导航栏-->
+<div th:insert="~{index :: navbar}"></div>
+<div style="height: 60px;width: 100%"></div>
+    <input  type="text" name="title" required lay-verify="required" placeholder="请输入要查找的校友姓名" autocomplete="off" class="layui-input" id="up-map-div" style="width: 200px;margin-left: 200px;margin-top: 80px;float:left;">
+    <div onclick="nameOnClick()" id="up-map-div2" style="margin-left: 410px;margin-top:82px" class="btn btn-success" >查找</div>
+
+<div id="map_container">
+</div>
+
+<!--侧边栏-->
+<div th:insert="map/map :: map-left"></div>
+
+</body>
+
+
+<script>
+    /* global BMapGL */
+
+    /* global mapv */
+
+    /* global mapvgl */
+
+    /* global initMap */
+
+    /* global whiteStyle */
+
+    var map = initMap({
+        style: whiteStyle,
+        tilt: 10,
+        center: [109.792816,35.702774],
+        zoom: 5,
+        skyColors: [
+            // 地面颜色
+            'rgba(226, 237, 248, 0)',
+            // 天空颜色
+            'rgba(186, 211, 252, 1)'
+        ]
+    });
+
+    var data = [];
+
+    var citys = [
+
+        '北京',
+        '天津',
+        '上海',
+        '重庆',
+        '石家庄',
+        '太原',
+        '呼和浩特',
+        '哈尔滨',
+        '长春',
+        '沈阳',
+        '济南',
+        '南京',
+        '合肥',
+        '杭州',
+        '南昌',
+        '郑州',
+        '武汉',
+        '长沙',
+        '南宁',
+        '西安',
+        '银川',
+        '兰州',
+        '西宁',
+        '乌鲁木齐',
+        '成都',
+        '贵阳',
+        '昆明',
+        '拉萨',
+    ];
+
+    var randomCount = 1000;
+
+    // 构造数据
+    while (randomCount--) {
+        var cityCenter = mapv.utilCityCenter.getCenterByCityName(
+            citys[parseInt(Math.random() * citys.length, 10)]
+        );
+        data.push({
+            geometry: {
+                type: 'Point',
+                coordinates: [cityCenter.lng - 2 + Math.random() * 4, cityCenter.lat - 2 + Math.random() * 4]
+            },
+            properties: {
+                icon: [
+                    //'/images/marker.png'
+                ][randomCount % 4],
+                width: randomCount % 2 === 0 ? 100 / 4 : 30,
+                height: randomCount % 2 === 0 ? 153 / 4 : 30
+            }
+        });
+    }
+
+    var view = new mapvgl.View({
+        map: map
+    });
+
+    //聚合点相关
+    var clusterLayer = new mapvgl.ClusterLayer({
+        minSize: 30, // 聚合点显示的最小直径
+        maxSize: 50, // 聚合点显示的最大直径
+        clusterRadius: 150, // 聚合范围半径
+        gradient: {0: 'blue', 0.5: 'green', 1.0: 'red'}, // 聚合点颜色梯度
+        maxZoom: 15, // 聚合的最大级别，当地图放大级别高于此值将不再聚合
+        minZoom: 5, // 聚合的最小级别，当地图放大级别低于此值将不再聚合
+        // 是否显示文字
+        showText: true,
+        // 开始聚合的最少点数，点数多于此值才会被聚合
+        minPoints: 5,
+        // 设置文字样式
+        textOptions: {
+            fontSize: 12,
+            color: 'white',
+            // 格式化数字显示
+            format: function (count) {
+                return count >= 10000 ? Math.round(count / 1000) + 'k'
+                    : count >= 1000 ? Math.round(count / 100) / 10 + 'k' : count;
+            }
+        },
+        // 设置非聚合的点的icon
+        // iconOptions: {
+        //     width: 100 / 4,
+        //     height: 153 / 4,
+        //     icon: 'images/marker.png',
+        // },
+        enablePicked: true,
+        onClick(e) {
+            if (e.dataItem) {
+                // 可通过dataItem下面的children属性拿到被聚合的所有点
+                console.log(e.dataItem);
+                pointOnClick()
+
+            }
+        }
+    });
+
+    view.addLayer(clusterLayer);
+    clusterLayer.setData(data);
+</script>
+
+
+
+
+
+<!--聊天系统-->
+<script th:inline="javascript">
+    var basePath = [[${#httpServletRequest.getScheme() + "://" + #httpServletRequest.getServerName() + ":" + #httpServletRequest.getServerPort() + #httpServletRequest.getContextPath()}]];
+    var userid = [[${session.userid}]];
+</script>
+<script type="application/javascript" th:src="@{/layim/layui/layui.js}"></script>
+<script type="application/javascript" th:src="@{/js/admin/layuiim.js}"></script>
+
+<script>
+    <!--------------------------------------------导航和侧边栏栏----------------------------------------------->
+    layui.use('element', function(){
+        var element = layui.element; //导航的hover效果、二级菜单等功能，需要依赖element模块
+
+        //监听导航点击
+        element.on('nav(demo)', function(elem){
+            //console.log(elem)
+            layer.msg(elem.text()+"1");
+        });
+    });
+</script>
+
+<script type="text/javascript">
+
+    listStuHtml = ''
+
+
+    function pointOnClick(){
+        layui.use('layer', function() { //独立版的layer无需执行这一句
+            //边缘弹出
+            layer.open({
+                type: 2
+                ,offset: ['70px', '1000px']
+                //,offset: 'rt' //具体配置参考：offset参数项
+                //,content: '<div style="padding: 230px 100px;">内容</div>'
+                ,content: ['/map/findStuOnPoint']
+                ,area: ['350px', '600px']
+                ,btn: '关闭全部'
+                ,btnAlign: 'c' //按钮居中
+                ,shade: 0 //不显示遮罩
+                ,yes: function(){
+                    layer.closeAll();
+                }
+            });
+        })
+    }
+    function nameOnClick(){
+        //alert(1);
+        stuName = $("#up-map-div").val();
+        layui.use('layer', function() { //独立版的layer无需执行这一句
+            //边缘弹出
+            layer.open({
+                type: 2
+                ,offset: ['70px', '1000px']
+                //,offset: 'rt' //具体配置参考：offset参数项
+                //,content: '<div style="padding: 230px 100px;">内容</div>'
+                ,content: ['/map/findStuOnName?stuName='+stuName]
+                ,area: ['350px', '600px']
+                ,btn: '关闭全部'
+                ,btnAlign: 'c' //按钮居中
+                ,shade: 0 //不显示遮罩
+                ,yes: function(){
+                    layer.closeAll();
+                }
+            });
+        })
+    }
+</script>
+<script th:inline="javascript">
+    var s = [[${session.userid}]]
+    if(s==null){
+        alert("请先登陆！")
+        window.location.href="/login"
+    }
+</script>
