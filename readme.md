@@ -1,5 +1,9 @@
 # 基于WebGIS的校友交流系统设计与实现（毕业设计）
 
+
+
+![](https://gitee.com/ldd1998/image-bed/raw/master/images/20211223222023.png)
+
 ## 用户登陆注册
 
 1、 普通用户的登陆注册
@@ -75,3 +79,15 @@
 校友论坛：贴子删除。
 
 ## 捐款系统
+
+
+
+联系方式
+
+qq：1193804498
+
+本系统参考：
+
+https://gitee.com/lgySpace/xiaoyou
+
+https://gitee.com/xzlmk/Campus_shops
