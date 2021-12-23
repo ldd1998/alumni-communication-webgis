@@ -60,8 +60,6 @@
 
 校友统计与分析的图表显示、来源地分析（迁徙图），毕业去向分析（迁徙图）等。
 
-![image-20211223223636515](C:\Users\刘冬冬\AppData\Roaming\Typora\typora-user-images\image-20211223223636515.png)
-
 ![](https://i.bmp.ovh/imgs/2021/12/91ef35cbccb55229.png)
 
 ![](https://i.bmp.ovh/imgs/2021/12/bad9d62b1615a528.png)
@@ -105,6 +103,8 @@
 联系方式
 
 qq：1193804498
+
+说明：本系统部分功能未能完全实现，请自行验证
 
 本系统参考：
 
