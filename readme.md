@@ -1,6 +1,6 @@
 # 基于WebGIS的校友交流系统设计与实现（毕业设计）
 
-
+## 基于springboot+thyemeleaf+shiro+echarts+geoserver+openlayers+postgresql+mysql开发
 
 ## 用户登陆注册
 
