@@ -16,7 +16,7 @@
 
 2、 首页主要显示学校最新新闻
 
-![](https://i.bmp.ovh/imgs/2021/12/e6598dc1718950b8.png)
+![](https://picgo-1256570725.cos.ap-shanghai.myqcloud.com/img/image-20230408133559592.png)
 
 ## 新闻中心
 
@@ -34,11 +34,11 @@
 
 4、 可以通过班级录向同学发送信息，添加好友等操作。
 
-![](https://i.bmp.ovh/imgs/2021/12/59b97933a7832e85.png)
+![](https://picgo-1256570725.cos.ap-shanghai.myqcloud.com/img/image-20230408133644647.png)
 
-![](https://i.bmp.ovh/imgs/2021/12/f9cebf55d591368e.png)
+![](https://picgo-1256570725.cos.ap-shanghai.myqcloud.com/img/image-20230408133702502.png)
 
-![](https://i.bmp.ovh/imgs/2021/12/134a5f1b6a660a3a.png)
+![](https://picgo-1256570725.cos.ap-shanghai.myqcloud.com/img/image-20230408133719291.png)
 
 
 
@@ -52,7 +52,7 @@
 
 评论回复：可对评论进行回复
 
-![](https://i.bmp.ovh/imgs/2021/12/7aa84ee7db2f4d86.png)
+![](https://picgo-1256570725.cos.ap-shanghai.myqcloud.com/img/image-20230408133739003.png)
 
 ## 校友地图
 
@@ -60,9 +60,9 @@
 
 校友统计与分析的图表显示、来源地分析（迁徙图），毕业去向分析（迁徙图）等。
 
-![](https://i.bmp.ovh/imgs/2021/12/91ef35cbccb55229.png)
+![](https://picgo-1256570725.cos.ap-shanghai.myqcloud.com/img/image-20230408133757172.png)
 
-![](https://i.bmp.ovh/imgs/2021/12/bad9d62b1615a528.png)
+![](https://picgo-1256570725.cos.ap-shanghai.myqcloud.com/img/image-20230408133813217.png)
 
 ## 个人中心
 
@@ -94,7 +94,7 @@
 
 校友论坛：贴子删除。
 
-![](https://i.bmp.ovh/imgs/2021/12/c2507643442214d7.png)
+![](https://picgo-1256570725.cos.ap-shanghai.myqcloud.com/img/image-20230408133829489.png)
 
 
 
