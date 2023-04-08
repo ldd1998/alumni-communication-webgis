@@ -8,7 +8,7 @@
 
 2、 管理员用户的登陆，主要用于登陆后台管理系统。
 
-![](https://i.bmp.ovh/imgs/2021/12/ae07e1407928dc63.png)
+![](https://picgo-1256570725.cos.ap-shanghai.myqcloud.com/img/image-20230408134013997.png)
 
 ## 首页界面
 
